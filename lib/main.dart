@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -25,11 +24,14 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.greenAccent,
-                foregroundColor: Colors.black)),
-        primarySwatch: Colors.blue,
+          fixedSize: (const Size(175, 50)),
+          backgroundColor: Colors.greenAccent,
+          foregroundColor: Colors.black,
+          textStyle: const TextStyle(fontSize: 24),
+        )),
+        primarySwatch: Colors.indigo,
       ),
-      home: const MyHomePage(title: 'Polling system'),
+      home: const MyHomePage(title: 'Polling System'),
     );
   }
 }
@@ -53,25 +55,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _testPress() {
-    setState(() {
-      _counter = 0;
-    });
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -104,25 +87,62 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'Welcome to the polling system!',
+              style: TextStyle(
+                fontSize: 32,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            ElevatedButton(onPressed: _testPress, child: const Text("reset")),
+            Column(children: <Widget>[
+              ElevatedButton(
+                  onPressed: () => _dialogBuilder(context),
+                  child: const Text("Create Poll")),
+              Container(
+                margin: const EdgeInsets.only(top: 30),
+                child: ElevatedButton(
+                    onPressed: () => _dialogBuilder(context),
+                    child: const Text("Join Poll")),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 60),
+                child: const SizedBox(
+                  width: 175,
+                  child: TextField(
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Join code',
+                    ),
+                  ),
+                ),
+              ),
+            ])
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-      // This trailing comma makes auto-formatting nicer for build methods.
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Future<void> _dialogBuilder(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('You clicked a button!'),
+          content: const Text('This feature is still in development :)'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
