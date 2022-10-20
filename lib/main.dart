@@ -55,6 +55,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  void showField() {
+    setState(() {
+      _fieldVisible = !_fieldVisible;
+    });
+  }
+
+  bool _fieldVisible = true;
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -99,41 +107,43 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Column(children: <Widget>[
               ElevatedButton(
-                  onPressed: () => _dialogBuilder(context),
+                  onPressed: () => _tempDialog(context),
                   child: const Text("Create Poll")),
               Container(
                 margin: const EdgeInsets.only(top: 30),
-                child: ElevatedButton(
-                    onPressed: () => _dialogBuilder(context),
-                    child: const Text("Join Poll")),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 60),
-                child: const SizedBox(
-                  width: 175,
-                  child: TextField(
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Join code',
-                    ),
-                  ),
+                child: AnimatedSwitcher(
+                  //TODO: make animation look cooler
+                  duration: const Duration(milliseconds: 500),
+                  child: _fieldVisible
+                      ? ElevatedButton(
+                          onPressed: showField, child: const Text("Join Poll"))
+                      : SizedBox(
+                          width: 175,
+                          child: TextField(
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Join code',
+                            ),
+                            onEditingComplete: () => _tempDialog(context),
+                          ),
+                        ),
                 ),
               ),
             ])
           ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 
-  Future<void> _dialogBuilder(BuildContext context) {
+  Future<void> _tempDialog(BuildContext context) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('You clicked a button!'),
+          title: const Text('You did something!'),
           content: const Text('This feature is still in development :)'),
           actions: <Widget>[
             TextButton(
