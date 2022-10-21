@@ -112,8 +112,19 @@ class _MyHomePageState extends State<MyHomePage> {
               Container(
                 margin: const EdgeInsets.only(top: 30),
                 child: AnimatedSwitcher(
-                  //TODO: make animation look cooler
-                  duration: const Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 275),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    final offsetAnimation = Tween<Offset>(
+                            begin: const Offset(-1.0, 0.0),
+                            end: const Offset(0.0, 0.0))
+                        .animate(animation);
+                    return ClipRect(
+                        child: SlideTransition(
+                      position: offsetAnimation,
+                      child: child,
+                    ));
+                  },
                   child: _fieldVisible
                       ? ElevatedButton(
                           onPressed: showField, child: const Text("Join Poll"))
@@ -123,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             maxLines: 1,
                             textAlign: TextAlign.center,
                             decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
+                              border: UnderlineInputBorder(),
                               labelText: 'Join code',
                             ),
                             onEditingComplete: () => _tempDialog(context),
