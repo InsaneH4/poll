@@ -31,13 +31,13 @@ class MyApp extends StatelessWidget {
         )),
         primarySwatch: Colors.indigo,
       ),
-      home: const MyHomePage(title: 'Polling System'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -48,10 +48,76 @@ class MyHomePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
+  final String title = "Polling System";
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class AnswerPage extends StatefulWidget {
+  const AnswerPage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<AnswerPage> createState() => _AnswerPageState();
+}
+
+class _AnswerPageState extends State<AnswerPage> {
+  final goToHome = MaterialPageRoute(builder: (context) => const MyHomePage());
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => _confirmQuitDialog(
+            context,
+            goToHome,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: const <Widget>[
+            Text(
+              'Page still in progress, user will answer questions from poll here',
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _confirmQuitDialog(BuildContext context, PageRoute route) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Warning'),
+          content: const Text('Are you sure you want to quit?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('NO'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.push(context, route),
+              child: const Text('YES'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -65,6 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final codeFieldCont = TextEditingController();
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -73,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
@@ -116,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   transitionBuilder:
                       (Widget child, Animation<double> animation) {
                     final offsetAnimation = Tween<Offset>(
-                            begin: const Offset(-1.0, 0.0),
+                            begin: const Offset(0.0, 1.0),
                             end: const Offset(0.0, 0.0))
                         .animate(animation);
                     return ClipRect(
@@ -131,14 +199,26 @@ class _MyHomePageState extends State<MyHomePage> {
                       : SizedBox(
                           width: 175,
                           child: TextField(
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText: 'Join code',
-                            ),
-                            onEditingComplete: () => _tempDialog(context),
-                          ),
+                              maxLines: 1,
+                              textAlign: TextAlign.center,
+                              decoration: const InputDecoration(
+                                border: UnderlineInputBorder(),
+                                labelText: 'Join code',
+                              ),
+                              controller: codeFieldCont,
+                              onEditingComplete: () {
+                                if (codeFieldCont.text.isNotEmpty) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const AnswerPage(
+                                              title:
+                                                  'temp (will get page title from name of poll)')));
+                                } else {
+                                  _emptyFieldDialog(context);
+                                }
+                                //^ Will get title from poll name
+                              }),
                         ),
                 ),
               ),
@@ -156,6 +236,24 @@ class _MyHomePageState extends State<MyHomePage> {
         return AlertDialog(
           title: const Text('You did something!'),
           content: const Text('This feature is still in development :)'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _emptyFieldDialog(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Umm...'),
+          content: const Text("You didn't enter a code"),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, 'OK'),
