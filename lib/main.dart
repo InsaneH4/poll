@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Polling System',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -84,10 +85,9 @@ class _AnswerPageState extends State<AnswerPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: const <Widget>[
             Text(
-              'Page still in progress, user will answer questions from poll here',
+              'Page in progress, user will answer questions from poll here',
               style: TextStyle(
                 fontSize: 24,
-                color: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -96,26 +96,92 @@ class _AnswerPageState extends State<AnswerPage> {
       ),
     );
   }
+}
 
-  _confirmQuitDialog(BuildContext context, PageRoute route) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Warning'),
-          content: const Text('Are you sure you want to quit?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('NO'),
+class HostPage extends StatefulWidget {
+  const HostPage({super.key});
+
+  final String title = "Creating A New Poll";
+
+  @override
+  State<HostPage> createState() => _HostPageState();
+}
+
+class _HostPageState extends State<HostPage> {
+  final goToHome = MaterialPageRoute(builder: (context) => const MyHomePage());
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => _confirmQuitDialog(
+            context,
+            goToHome,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+              child: const TextField(
+                decoration: InputDecoration(
+                  hintText: 'Enter a question',
+                  border: OutlineInputBorder(),
+                ),
+              ),
             ),
-            TextButton(
-              onPressed: () => Navigator.push(context, route),
-              child: const Text('YES'),
-            ),
+            //TODO: add more questions, submit, save data
+            Row(children: <Widget>[
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                  child: const TextField(
+                      decoration: InputDecoration(
+                    hintText: 'Option 1',
+                    border: OutlineInputBorder(),
+                  )),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: const TextField(
+                      decoration: InputDecoration(
+                    hintText: 'Option 2',
+                    border: OutlineInputBorder(),
+                  )),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: const TextField(
+                      decoration: InputDecoration(
+                    hintText: 'Option 3',
+                    border: OutlineInputBorder(),
+                  )),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
+                  child: const TextField(
+                      decoration: InputDecoration(
+                    hintText: 'Option 4',
+                    border: OutlineInputBorder(),
+                  )),
+                ),
+              ),
+            ])
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }
@@ -168,17 +234,21 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'Welcome to the polling system!',
               style: TextStyle(
-                fontSize: 32,
-                color: Colors.black,
+                fontSize: 48,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Column(children: <Widget>[
               ElevatedButton(
-                  onPressed: () => _tempDialog(context),
+                  onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HostPage(),
+                        ),
+                      ),
                   child: const Text("Create Poll")),
               Container(
-                margin: const EdgeInsets.only(top: 30),
+                margin: const EdgeInsets.only(top: 50),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 275),
                   transitionBuilder:
@@ -235,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('You did something!'),
-          content: const Text('This feature is still in development :)'),
+          content: const Text('This feature is in development :)'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, 'OK'),
@@ -264,4 +334,26 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
   }
+}
+
+Future<void> _confirmQuitDialog(BuildContext context, PageRoute route) {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Warning'),
+        content: const Text('Are you sure you want to quit?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('NO'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.push(context, route),
+            child: const Text('YES'),
+          ),
+        ],
+      );
+    },
+  );
 }
