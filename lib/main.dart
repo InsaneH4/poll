@@ -7,22 +7,12 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Polling System',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
           fixedSize: (const Size(175, 50)),
@@ -39,15 +29,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title = "Polling System";
 
@@ -107,81 +88,210 @@ class HostPage extends StatefulWidget {
   State<HostPage> createState() => _HostPageState();
 }
 
-class _HostPageState extends State<HostPage> {
-  final goToHome = MaterialPageRoute(builder: (context) => const MyHomePage());
+class DynamicWidget extends StatelessWidget {
+  DynamicWidget({super.key});
+
+  final TextEditingController question = TextEditingController();
+  final TextEditingController option1 = TextEditingController();
+  final TextEditingController option2 = TextEditingController();
+  final TextEditingController option3 = TextEditingController();
+  final TextEditingController option4 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => _confirmQuitDialog(
-            context,
-            goToHome,
-          ),
-        ),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-              child: const TextField(
-                decoration: InputDecoration(
-                  hintText: 'Enter a question',
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+      child: Column(
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            child: TextField(
+                controller: question,
+                decoration: const InputDecoration(
+                  labelText: 'Question',
                   border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-            //TODO: add more questions, submit, save data
-            Row(children: <Widget>[
+                )),
+          ),
+          Row(
+            children: <Widget>[
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
-                  child: const TextField(
-                      decoration: InputDecoration(
-                    hintText: 'Option 1',
-                    border: OutlineInputBorder(),
-                  )),
+                  child: TextField(
+                      controller: option1,
+                      decoration: const InputDecoration(
+                        labelText: 'Option 1',
+                        border: OutlineInputBorder(),
+                      )),
                 ),
               ),
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: const TextField(
-                      decoration: InputDecoration(
-                    hintText: 'Option 2',
-                    border: OutlineInputBorder(),
-                  )),
+                  child: TextField(
+                      controller: option2,
+                      decoration: const InputDecoration(
+                        labelText: 'Option 2',
+                        border: OutlineInputBorder(),
+                      )),
                 ),
               ),
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: const TextField(
-                      decoration: InputDecoration(
-                    hintText: 'Option 3',
-                    border: OutlineInputBorder(),
-                  )),
+                  child: TextField(
+                      controller: option3,
+                      decoration: const InputDecoration(
+                        labelText: 'Option 3',
+                        border: OutlineInputBorder(),
+                      )),
                 ),
               ),
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
-                  child: const TextField(
-                      decoration: InputDecoration(
-                    hintText: 'Option 4',
-                    border: OutlineInputBorder(),
-                  )),
+                  child: TextField(
+                      controller: option4,
+                      decoration: const InputDecoration(
+                        labelText: 'Option 4',
+                        border: OutlineInputBorder(),
+                      )),
                 ),
               ),
-            ])
-          ],
-        ),
+            ],
+          )
+        ],
       ),
+    );
+  }
+}
+
+class _HostPageState extends State<HostPage> {
+  final goToHome = MaterialPageRoute(builder: (context) => const MyHomePage());
+  var _showButton = true;
+  List<DynamicWidget> dynamicList = [];
+  List<String> questions = [];
+  List<String> option1 = [];
+  List<String> option2 = [];
+  List<String> option3 = [];
+  List<String> option4 = [];
+
+  void _emptyQuestionsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Umm...'),
+          content: const Text("You didn't add any questions"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addDynamic() {
+    if (questions.isNotEmpty) {
+      questions = [];
+      option1 = [];
+      option2 = [];
+      option3 = [];
+      option4 = [];
+      dynamicList = [];
+    }
+    setState(() {});
+    dynamicList.add(DynamicWidget());
+  }
+
+  void submitData() {
+    for (var widget in dynamicList) {
+      questions.add(widget.question.text);
+      option1.add(widget.option1.text);
+      option2.add(widget.option2.text);
+      option3.add(widget.option3.text);
+      option4.add(widget.option4.text);
+    }
+    if (questions.isNotEmpty &&
+        option1.isNotEmpty &&
+        option2.isNotEmpty &&
+        option3.isNotEmpty &&
+        option4.isNotEmpty) {
+      _showButton = false;
+    } else {
+      _emptyQuestionsDialog(context);
+    }
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget dynamicTextField = Flexible(
+      flex: 2,
+      child: ListView.builder(
+        itemCount: dynamicList.length,
+        itemBuilder: (_, index) => dynamicList[index],
+      ),
+    );
+    Widget result = Flexible(
+        flex: 1,
+        child: Card(
+          child: ListView.builder(
+            itemCount: questions.length,
+            itemBuilder: (_, index) {
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.only(left: 10.0),
+                      child: Text(
+                          "#${index + 1}   ${questions[index]}: "
+                          "${option1[index]}, ${option2[index]},"
+                          " ${option3[index]}, ${option4[index]}",
+                          style: const TextStyle(fontSize: 20)),
+                    ),
+                    const Divider()
+                  ],
+                ),
+              );
+            },
+          ),
+        ));
+    Widget submitButton = Container(
+      margin: const EdgeInsets.all(20),
+      child: ElevatedButton(
+        onPressed: submitData,
+        child: const Text('Submit'),
+      ),
+    );
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => dynamicList.isNotEmpty
+                ? _confirmQuitDialog(
+                    context,
+                    goToHome,
+                  )
+                : Navigator.push(context, goToHome)),
+      ),
+      body: Column(children: <Widget>[
+        questions.isEmpty ? dynamicTextField : result,
+        questions.isEmpty ? submitButton : Container(),
+      ]),
+      //TODO: add remove button by each question
+      floatingActionButton: _showButton
+          ? FloatingActionButton(
+              onPressed: _addDynamic,
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 }
@@ -198,37 +308,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final codeFieldCont = TextEditingController();
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             const Text(
@@ -299,31 +385,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<void> _tempDialog(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('You did something!'),
-          content: const Text('This feature is in development :)'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'OK'),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _emptyFieldDialog(BuildContext context) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Umm...'),
-          content: const Text("You didn't enter a code"),
+          content: const Text("You didn't enter anything"),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, 'OK'),
@@ -351,6 +419,24 @@ Future<void> _confirmQuitDialog(BuildContext context, PageRoute route) {
           TextButton(
             onPressed: () => Navigator.push(context, route),
             child: const Text('YES'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _tempDialog(BuildContext context) {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('You did something!'),
+        content: const Text('This feature is in development :)'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
           ),
         ],
       );
