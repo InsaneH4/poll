@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
           fixedSize: (const Size(175, 50)),
           backgroundColor: Colors.greenAccent,
           foregroundColor: Colors.black,
-          textStyle: const TextStyle(fontSize: 24),
+          textStyle: const TextStyle(fontSize: 32),
         )),
         primarySwatch: Colors.indigo,
       ),
@@ -68,9 +68,10 @@ class _AnswerPageState extends State<AnswerPage> {
             Text(
               'Page in progress, user will answer questions from poll here',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -92,10 +93,10 @@ class DynamicWidget extends StatelessWidget {
   DynamicWidget({super.key});
 
   final TextEditingController question = TextEditingController();
-  final TextEditingController option1 = TextEditingController();
-  final TextEditingController option2 = TextEditingController();
-  final TextEditingController option3 = TextEditingController();
-  final TextEditingController option4 = TextEditingController();
+  final TextEditingController choice1 = TextEditingController();
+  final TextEditingController choice2 = TextEditingController();
+  final TextEditingController choice3 = TextEditingController();
+  final TextEditingController choice4 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +106,7 @@ class DynamicWidget extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
             child: TextField(
                 controller: question,
                 decoration: const InputDecoration(
@@ -117,11 +118,11 @@ class DynamicWidget extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
-                      controller: option1,
+                      controller: choice1,
                       decoration: const InputDecoration(
-                        labelText: 'Option 1',
+                        labelText: 'Answer',
                         border: OutlineInputBorder(),
                       )),
                 ),
@@ -130,37 +131,42 @@ class DynamicWidget extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
-                      controller: option2,
-                      decoration: const InputDecoration(
-                        labelText: 'Option 2',
-                        border: OutlineInputBorder(),
-                      )),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: TextField(
-                      controller: option3,
-                      decoration: const InputDecoration(
-                        labelText: 'Option 3',
-                        border: OutlineInputBorder(),
-                      )),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
-                  child: TextField(
-                      controller: option4,
-                      decoration: const InputDecoration(
-                        labelText: 'Option 4',
-                        border: OutlineInputBorder(),
-                      )),
+                    controller: choice2,
+                    decoration: const InputDecoration(
+                      labelText: 'Answer',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ),
               ),
             ],
-          )
+          ),
+          Row(children: <Widget>[
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                child: TextField(
+                  controller: choice3,
+                  decoration: const InputDecoration(
+                    labelText: 'Answer',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                child: TextField(
+                  controller: choice4,
+                  decoration: const InputDecoration(
+                    labelText: 'Answer',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ),
+          ]),
         ],
       ),
     );
@@ -172,10 +178,10 @@ class _HostPageState extends State<HostPage> {
   var _showButton = true;
   List<DynamicWidget> dynamicList = [];
   List<String> questions = [];
-  List<String> option1 = [];
-  List<String> option2 = [];
-  List<String> option3 = [];
-  List<String> option4 = [];
+  List<String> choice1 = [];
+  List<String> choice2 = [];
+  List<String> choice3 = [];
+  List<String> choice4 = [];
 
   void _emptyQuestionsDialog(BuildContext context) {
     showDialog(
@@ -198,10 +204,10 @@ class _HostPageState extends State<HostPage> {
   void _addDynamic() {
     if (questions.isNotEmpty) {
       questions = [];
-      option1 = [];
-      option2 = [];
-      option3 = [];
-      option4 = [];
+      choice1 = [];
+      choice2 = [];
+      choice3 = [];
+      choice4 = [];
       dynamicList = [];
     }
     setState(() {});
@@ -211,16 +217,16 @@ class _HostPageState extends State<HostPage> {
   void submitData() {
     for (var widget in dynamicList) {
       questions.add(widget.question.text);
-      option1.add(widget.option1.text);
-      option2.add(widget.option2.text);
-      option3.add(widget.option3.text);
-      option4.add(widget.option4.text);
+      choice1.add(widget.choice1.text);
+      choice2.add(widget.choice2.text);
+      choice3.add(widget.choice3.text);
+      choice4.add(widget.choice4.text);
     }
     if (questions.isNotEmpty &&
-        option1.isNotEmpty &&
-        option2.isNotEmpty &&
-        option3.isNotEmpty &&
-        option4.isNotEmpty) {
+        choice1.isNotEmpty &&
+        choice2.isNotEmpty &&
+        choice3.isNotEmpty &&
+        choice4.isNotEmpty) {
       _showButton = false;
     } else {
       _emptyQuestionsDialog(context);
@@ -231,32 +237,29 @@ class _HostPageState extends State<HostPage> {
   @override
   Widget build(BuildContext context) {
     Widget dynamicTextField = Flexible(
-      flex: 2,
       child: ListView.builder(
         itemCount: dynamicList.length,
         itemBuilder: (_, index) => dynamicList[index],
       ),
     );
     Widget result = Flexible(
-        flex: 1,
+        flex: 2,
         child: Card(
           child: ListView.builder(
             itemCount: questions.length,
             itemBuilder: (_, index) {
-              return Padding(
-                padding: const EdgeInsets.all(10.0),
+              return Card(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Container(
-                      margin: const EdgeInsets.only(left: 10.0),
+                      margin: const EdgeInsets.all(20.0),
                       child: Text(
                           "#${index + 1}   ${questions[index]}: "
-                          "${option1[index]}, ${option2[index]},"
-                          " ${option3[index]}, ${option4[index]}",
+                          "${choice1[index]}, ${choice2[index]},"
+                          " ${choice3[index]}, ${choice4[index]}",
                           style: const TextStyle(fontSize: 20)),
                     ),
-                    const Divider()
                   ],
                 ),
               );
@@ -267,7 +270,10 @@ class _HostPageState extends State<HostPage> {
       margin: const EdgeInsets.all(20),
       child: ElevatedButton(
         onPressed: submitData,
-        child: const Text('Submit'),
+        child: const Text(
+          'Submit',
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        ),
       ),
     );
     return Scaffold(
@@ -324,16 +330,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.center,
             ),
             Column(children: <Widget>[
-              ElevatedButton(
-                  onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HostPage(),
+              SizedBox(
+                width: 250,
+                height: 75,
+                child: ElevatedButton(
+                    onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HostPage(),
+                          ),
                         ),
-                      ),
-                  child: const Text("Create Poll")),
+                    child: const Text("Create Poll",
+                        style: TextStyle(fontSize: 36))),
+              ),
               Container(
                 margin: const EdgeInsets.only(top: 50),
                 child: AnimatedSwitcher(
@@ -341,7 +353,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   transitionBuilder:
                       (Widget child, Animation<double> animation) {
                     final offsetAnimation = Tween<Offset>(
-                            begin: const Offset(0.0, 1.0),
+                            begin: const Offset(0.0, 2.0),
                             end: const Offset(0.0, 0.0))
                         .animate(animation);
                     return ClipRect(
@@ -351,16 +363,29 @@ class _MyHomePageState extends State<MyHomePage> {
                     ));
                   },
                   child: _fieldVisible
-                      ? ElevatedButton(
-                          onPressed: showField, child: const Text("Join Poll"))
+                      //container makes animation work lol
+                      // ignore: avoid_unnecessary_containers
+                      ? Container(
+                          child: SizedBox(
+                            width: 250,
+                            height: 75,
+                            child: ElevatedButton(
+                                onPressed: showField,
+                                child: const Text("Join Poll",
+                                    style: TextStyle(fontSize: 36))),
+                          ),
+                        )
                       : SizedBox(
-                          width: 175,
+                          width: 250,
+                          height: 75,
                           child: TextField(
                               maxLines: 1,
                               textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 36),
                               decoration: const InputDecoration(
                                 border: UnderlineInputBorder(),
-                                labelText: 'Join code',
+                                hintText: 'Room Code',
+                                hintStyle: TextStyle(fontSize: 36),
                               ),
                               controller: codeFieldCont,
                               onEditingComplete: () {
@@ -370,7 +395,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       MaterialPageRoute(
                                           builder: (context) => const AnswerPage(
                                               title:
-                                                  'temp (will get page title from name of poll)')));
+                                                  '(will get title from poll name)')));
                                 } else {
                                   _emptyFieldDialog(context);
                                 }
