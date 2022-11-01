@@ -64,14 +64,87 @@ class _AnswerPageState extends State<AnswerPage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const <Widget>[
-            Text(
-              'Page in progress, user will answer questions from poll here',
+          children: <Widget>[
+            const Text(
+              'Question from poll will be listed here',
               style: TextStyle(
-                fontSize: 26,
+                fontSize: 36,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
+            ),
+            Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 175,
+                      height: 175,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.red,
+                          textStyle: const TextStyle(
+                              fontSize: 150, fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () => _tempDialog(context),
+                        child: const Text("A"),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 175,
+                      height: 175,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.blue,
+                          textStyle: const TextStyle(
+                              fontSize: 150, fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () => _tempDialog(context),
+                        child: const Text("B"),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 175,
+                        height: 175,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.amber,
+                            textStyle: const TextStyle(
+                                fontSize: 150, fontWeight: FontWeight.bold),
+                          ),
+                          onPressed: () => _tempDialog(context),
+                          child: const Text("C"),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 175,
+                        height: 175,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                            textStyle: const TextStyle(
+                                fontSize: 150, fontWeight: FontWeight.bold),
+                          ),
+                          onPressed: () => _tempDialog(context),
+                          child: const Text("D"),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -410,24 +483,24 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
 
-  Future<void> _emptyFieldDialog(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Umm...'),
-          content: const Text("You didn't enter anything"),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'OK'),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+Future<void> _emptyFieldDialog(BuildContext context) {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Umm...'),
+        content: const Text("You didn't enter anything"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 Future<void> _confirmQuitDialog(BuildContext context, PageRoute route) {
