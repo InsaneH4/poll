@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+final _channel = WebSocketChannel.connect(Uri.parse("ws://localhost:8080"));
 
 void main() {
   runApp(const MyApp());
@@ -22,18 +25,18 @@ class MyApp extends StatelessWidget {
         )),
         primarySwatch: Colors.indigo,
       ),
-      home: const MyHomePage(),
+      home: const Homepage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class Homepage extends StatefulWidget {
+  const Homepage({super.key});
 
   final String title = "Polling System";
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Homepage> createState() => _HomepageState();
 }
 
 class AnswerPage extends StatefulWidget {
@@ -46,7 +49,7 @@ class AnswerPage extends StatefulWidget {
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-  final goToHome = MaterialPageRoute(builder: (context) => const MyHomePage());
+  final goToHome = MaterialPageRoute(builder: (context) => const Homepage());
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +91,7 @@ class _AnswerPageState extends State<AnswerPage> {
                           textStyle: const TextStyle(
                               fontSize: 150, fontWeight: FontWeight.bold),
                         ),
-                        onPressed: () => _tempDialog(context),
+                        onPressed: () => _answerSubmit("A"),
                         child: const Text("A"),
                       ),
                     ),
@@ -102,7 +105,7 @@ class _AnswerPageState extends State<AnswerPage> {
                           textStyle: const TextStyle(
                               fontSize: 150, fontWeight: FontWeight.bold),
                         ),
-                        onPressed: () => _tempDialog(context),
+                        onPressed: () => _answerSubmit("B"),
                         child: const Text("B"),
                       ),
                     ),
@@ -123,7 +126,7 @@ class _AnswerPageState extends State<AnswerPage> {
                             textStyle: const TextStyle(
                                 fontSize: 150, fontWeight: FontWeight.bold),
                           ),
-                          onPressed: () => _tempDialog(context),
+                          onPressed: () => _answerSubmit("C"),
                           child: const Text("C"),
                         ),
                       ),
@@ -133,11 +136,11 @@ class _AnswerPageState extends State<AnswerPage> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
-                              backgroundColor: Colors.green,
+                            backgroundColor: Colors.green,
                             textStyle: const TextStyle(
                                 fontSize: 150, fontWeight: FontWeight.bold),
                           ),
-                          onPressed: () => _tempDialog(context),
+                          onPressed: () => _answerSubmit("D"),
                           child: const Text("D"),
                         ),
                       ),
@@ -247,7 +250,7 @@ class DynamicWidget extends StatelessWidget {
 }
 
 class _HostPageState extends State<HostPage> {
-  final goToHome = MaterialPageRoute(builder: (context) => const MyHomePage());
+  final goToHome = MaterialPageRoute(builder: (context) => const Homepage());
   var _showButton = true;
   List<DynamicWidget> dynamicList = [];
   List<String> questions = [];
@@ -376,7 +379,7 @@ class _HostPageState extends State<HostPage> {
   }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomepageState extends State<Homepage> {
   void showField() {
     setState(() {
       _fieldVisible = !_fieldVisible;
@@ -388,6 +391,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final codeFieldCont = TextEditingController();
+    String code;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -463,12 +467,14 @@ class _MyHomePageState extends State<MyHomePage> {
                               controller: codeFieldCont,
                               onEditingComplete: () {
                                 if (codeFieldCont.text.isNotEmpty) {
+                                  code = codeFieldCont.text;
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => const AnswerPage(
-                                              title:
-                                                  '(will get title from poll name)')));
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AnswerPage(title: 'game $code'),
+                                    ),
+                                  );
                                 } else {
                                   _emptyFieldDialog(context);
                                 }
@@ -482,6 +488,13 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+}
+
+void _answerSubmit(String choice) {
+  if (choice == "A" || choice == "B" || choice == "C" || choice == "D") {
+    _channel.sink.add(choice);
+    print("$choice sent to server");
   }
 }
 
