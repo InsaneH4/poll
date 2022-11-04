@@ -334,6 +334,16 @@ class _HostPageState extends State<HostPage> {
         itemBuilder: (context, index) {
           return Dismissible(
             key: UniqueKey(),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              color: Colors.red,
+              child: const Center(
+                child: Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.white, fontSize: 72),
+                ),
+              ),
+            ),
             onDismissed: (direction) {
               setState(() => dynamicList.removeAt(index));
             },
