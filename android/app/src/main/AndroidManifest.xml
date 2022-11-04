@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.team25.poll">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
    <application
         android:label="poll"
         android:name="${applicationName}"
