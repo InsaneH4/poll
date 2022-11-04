@@ -1,7 +1,10 @@
+//import 'package:ethan/cha.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 final _channel = WebSocketChannel.connect(Uri.parse("ws://localhost:8080"));
+
+//TODO: add waiting for game to start page
 
 void main() {
   runApp(const MyApp());
@@ -181,14 +184,21 @@ class DynamicWidget extends StatelessWidget {
 
       child: Column(
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-            child: TextField(
-                controller: question,
-                decoration: const InputDecoration(
-                  labelText: 'Question',
-                  border: OutlineInputBorder(),
-                )),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: TextField(
+                    controller: question,
+                    decoration: const InputDecoration(
+                      labelText: 'Question',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           Row(
             children: <Widget>[
@@ -292,11 +302,17 @@ class _HostPageState extends State<HostPage> {
 
   void submitData() {
     for (var widget in dynamicList) {
-      questions.add(widget.question.text);
-      choice1.add(widget.choice1.text);
-      choice2.add(widget.choice2.text);
-      choice3.add(widget.choice3.text);
-      choice4.add(widget.choice4.text);
+      if (widget.question.text.isNotEmpty &&
+          widget.choice1.text.isNotEmpty &&
+          widget.choice2.text.isNotEmpty &&
+          widget.choice3.text.isNotEmpty &&
+          widget.choice4.text.isNotEmpty) {
+        questions.add(widget.question.text);
+        choice1.add(widget.choice1.text);
+        choice2.add(widget.choice2.text);
+        choice3.add(widget.choice3.text);
+        choice4.add(widget.choice4.text);
+      }
     }
     if (questions.isNotEmpty &&
         choice1.isNotEmpty &&
@@ -315,7 +331,15 @@ class _HostPageState extends State<HostPage> {
     Widget dynamicTextField = Flexible(
       child: ListView.builder(
         itemCount: dynamicList.length,
-        itemBuilder: (_, index) => dynamicList[index],
+        itemBuilder: (context, index) {
+          return Dismissible(
+            key: UniqueKey(),
+            onDismissed: (direction) {
+              setState(() => dynamicList.removeAt(index));
+            },
+            child: dynamicList[index],
+          );
+        },
       ),
     );
     Widget result = Flexible(
@@ -368,7 +392,6 @@ class _HostPageState extends State<HostPage> {
         questions.isEmpty ? dynamicTextField : result,
         questions.isEmpty ? submitButton : Container(),
       ]),
-      //TODO: add remove button by each question
       floatingActionButton: _showButton
           ? FloatingActionButton(
               onPressed: _addDynamic,
@@ -381,9 +404,11 @@ class _HostPageState extends State<HostPage> {
 
 class _HomepageState extends State<Homepage> {
   void showField() {
-    setState(() {
-      _fieldVisible = !_fieldVisible;
-    });
+    setState(
+      () {
+        _fieldVisible = !_fieldVisible;
+      },
+    );
   }
 
   bool _fieldVisible = true;
@@ -493,7 +518,7 @@ class _HomepageState extends State<Homepage> {
 
 void _answerSubmit(String choice) {
   if (choice == "A" || choice == "B" || choice == "C" || choice == "D") {
-    _channel.sink.add(choice);
+    _channel.sink.add("User answered $choice"); //Sends data to websocket
     print("$choice sent to server");
   }
 }
