@@ -4,8 +4,6 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 final _channel = WebSocketChannel.connect(Uri.parse("ws://localhost:8080"));
 
-//TODO: add waiting for game to start page
-
 void main() {
   runApp(const MyApp());
 }
@@ -52,7 +50,16 @@ class AnswerPage extends StatefulWidget {
 }
 
 class _AnswerPageState extends State<AnswerPage> {
+  void pollStarted() {
+    setState(
+      () {
+        _isPollStart = !_isPollStart;
+      },
+    );
+  }
+
   final goToHome = MaterialPageRoute(builder: (context) => const Homepage());
+  bool _isPollStart = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,52 +78,27 @@ class _AnswerPageState extends State<AnswerPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            const Text(
-              'Question from poll will be listed here',
-              style: TextStyle(
-                fontSize: 36,
+            Text(
+              _isPollStart
+                  ? 'Question from poll will be listed here'
+                  : 'Waiting for host to start the poll',
+              style: const TextStyle(
+                fontSize: 48,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
-            Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    SizedBox(
-                      width: 175,
-                      height: 175,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.red,
-                          textStyle: const TextStyle(
-                              fontSize: 150, fontWeight: FontWeight.bold),
-                        ),
-                        onPressed: () => _answerSubmit("A"),
-                        child: const Text("A"),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 175,
-                      height: 175,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.blue,
-                          textStyle: const TextStyle(
-                              fontSize: 150, fontWeight: FontWeight.bold),
-                        ),
-                        onPressed: () => _answerSubmit("B"),
-                        child: const Text("B"),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 25),
-                  child: Row(
+            Visibility(
+                visible: !_isPollStart,
+                child: ElevatedButton(
+                  child: const Text("start poll"),
+                  onPressed: () => pollStarted(),
+                )),
+            Visibility(
+              visible: _isPollStart,
+              child: Column(
+                children: <Widget>[
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       SizedBox(
@@ -125,12 +107,12 @@ class _AnswerPageState extends State<AnswerPage> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: Colors.amber,
+                            backgroundColor: Colors.red,
                             textStyle: const TextStyle(
                                 fontSize: 150, fontWeight: FontWeight.bold),
                           ),
-                          onPressed: () => _answerSubmit("C"),
-                          child: const Text("C"),
+                          onPressed: () => _answerSubmit("A"),
+                          child: const Text("A"),
                         ),
                       ),
                       SizedBox(
@@ -139,18 +121,54 @@ class _AnswerPageState extends State<AnswerPage> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: Colors.green,
+                            backgroundColor: Colors.blue,
                             textStyle: const TextStyle(
                                 fontSize: 150, fontWeight: FontWeight.bold),
                           ),
-                          onPressed: () => _answerSubmit("D"),
-                          child: const Text("D"),
+                          onPressed: () => _answerSubmit("B"),
+                          child: const Text("B"),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  Container(
+                    margin: const EdgeInsets.only(top: 25),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 175,
+                          height: 175,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.amber,
+                              textStyle: const TextStyle(
+                                  fontSize: 150, fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: () => _answerSubmit("C"),
+                            child: const Text("C"),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 175,
+                          height: 175,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                              textStyle: const TextStyle(
+                                  fontSize: 150, fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: () => _answerSubmit("D"),
+                            child: const Text("D"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -511,7 +529,7 @@ class _HomepageState extends State<Homepage> {
                                     ),
                                   );
                                 } else {
-                                  _emptyFieldDialog(context);
+                                  _wrongCodeDialog(context);
                                 }
                                 //^ Will get title from poll name
                               }),
@@ -533,13 +551,13 @@ void _answerSubmit(String choice) {
   }
 }
 
-Future<void> _emptyFieldDialog(BuildContext context) {
-  return showDialog<void>(
+void _wrongCodeDialog(BuildContext context) {
+  showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
         title: const Text('Umm...'),
-        content: const Text("You didn't enter anything"),
+        content: const Text("You didn't enter a valid code"),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context, 'OK'),
@@ -551,8 +569,8 @@ Future<void> _emptyFieldDialog(BuildContext context) {
   );
 }
 
-Future<void> _confirmQuitDialog(BuildContext context, PageRoute route) {
-  return showDialog<void>(
+void _confirmQuitDialog(BuildContext context, PageRoute route) {
+  showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
@@ -573,8 +591,8 @@ Future<void> _confirmQuitDialog(BuildContext context, PageRoute route) {
   );
 }
 
-Future<void> _tempDialog(BuildContext context) {
-  return showDialog<void>(
+void _tempDialog(BuildContext context) {
+  showDialog<void>(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
