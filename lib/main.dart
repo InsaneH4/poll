@@ -395,7 +395,7 @@ class _HostPageState extends State<HostPage> {
           ),
         ));
     Widget submitButton = Container(
-      margin: const EdgeInsets.all(50),
+      margin: const EdgeInsets.all(20),
       child: ElevatedButton(
         onPressed: submitData,
         child: const Text(
@@ -455,15 +455,15 @@ class _HomepageState extends State<Homepage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Container(
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Text(
-              'Welcome to the polling system!',
-              style: TextStyle(
-                fontSize: 44,
-                fontWeight: FontWeight.bold,
+              margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+              child: const Text(
+                'Welcome to the polling system!',
+                style: TextStyle(
+                  fontSize: 44,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
             ),
             Column(children: <Widget>[
               SizedBox(
@@ -520,7 +520,9 @@ class _HomepageState extends State<Homepage> {
                                 hintText: 'Room Code',
                                 hintStyle: TextStyle(fontSize: 36),
                               ),
-                              keyboardType: TextInputType.visiblePassword,
+                              textCapitalization: TextCapitalization.characters,
+                              autocorrect: false,
+                              enableSuggestions: false,
                               controller: codeFieldCont,
                               onEditingComplete: () {
                                 if (codeFieldCont.text.isNotEmpty) {
