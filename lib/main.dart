@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 final _channel = WebSocketChannel.connect(Uri.parse("ws://localhost:8080"));
+final goToHome = MaterialPageRoute(builder: (context) => const Homepage());
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Polling System',
+      title: 'RoboPoll',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -34,16 +35,16 @@ class MyApp extends StatelessWidget {
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
-  final String title = "Polling System";
+  final String title = "RoboPoll";
 
   @override
   State<Homepage> createState() => _HomepageState();
 }
 
 class AnswerPage extends StatefulWidget {
-  const AnswerPage({super.key, required this.title});
+  const AnswerPage({super.key});
 
-  final String title;
+  final String title = "Joined Poll";
 
   @override
   State<AnswerPage> createState() => _AnswerPageState();
@@ -59,7 +60,7 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   final goToHome = MaterialPageRoute(builder: (context) => const Homepage());
-  bool _isPollStart = false;
+  var _isPollStart = false;
 
   @override
   Widget build(BuildContext context) {
@@ -177,13 +178,78 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 }
 
+class GamePage extends StatefulWidget {
+  const GamePage({super.key});
+
+  final String title = "Poll in progress";
+
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
+  var responseNum = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => _confirmQuitDialog(
+            context,
+            goToHome,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            const Text("Question will be here", style: TextStyle(fontSize: 48)),
+            Text("$responseNum responses",
+                style: const TextStyle(fontSize: 28)),
+            SizedBox(
+              width: 250,
+              height: 75,
+              child: ElevatedButton(
+                child: const Text(
+                  "Show results",
+                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                ),
+                onPressed: () => _tempDialog(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class HostPage extends StatefulWidget {
   const HostPage({super.key});
 
-  final String title = "Creating A New Poll";
+  final String title = "New Poll";
 
   @override
   State<HostPage> createState() => _HostPageState();
+}
+
+class PollObj {
+  List<String> questions;
+  List<String> choice1;
+  List<String> choice2;
+  List<String> choice3;
+  List<String> choice4;
+
+  PollObj(
+      {required this.questions,
+      required this.choice1,
+      required this.choice2,
+      required this.choice3,
+      required this.choice4});
 }
 
 class DynamicWidget extends StatelessWidget {
@@ -278,7 +344,6 @@ class DynamicWidget extends StatelessWidget {
 }
 
 class _HostPageState extends State<HostPage> {
-  final goToHome = MaterialPageRoute(builder: (context) => const Homepage());
   var _showButton = true;
   List<DynamicWidget> dynamicList = [];
   List<String> questions = [];
@@ -286,6 +351,13 @@ class _HostPageState extends State<HostPage> {
   List<String> choice2 = [];
   List<String> choice3 = [];
   List<String> choice4 = [];
+  late PollObj pollObj = PollObj(
+    questions: questions,
+    choice1: choice1,
+    choice2: choice2,
+    choice3: choice3,
+    choice4: choice4,
+  );
 
   void _emptyQuestionsDialog(BuildContext context) {
     showDialog(
@@ -307,11 +379,11 @@ class _HostPageState extends State<HostPage> {
 
   void _addDynamic() {
     if (questions.isNotEmpty) {
-      questions = [];
-      choice1 = [];
-      choice2 = [];
-      choice3 = [];
-      choice4 = [];
+      pollObj.questions = [];
+      pollObj.choice1 = [];
+      pollObj.choice2 = [];
+      pollObj.choice3 = [];
+      pollObj.choice4 = [];
       dynamicList = [];
     }
     setState(() {});
@@ -325,11 +397,11 @@ class _HostPageState extends State<HostPage> {
           widget.choice2.text.isNotEmpty &&
           widget.choice3.text.isNotEmpty &&
           widget.choice4.text.isNotEmpty) {
-        questions.add(widget.question.text);
-        choice1.add(widget.choice1.text);
-        choice2.add(widget.choice2.text);
-        choice3.add(widget.choice3.text);
-        choice4.add(widget.choice4.text);
+        pollObj.questions.add(widget.question.text);
+        pollObj.choice1.add(widget.choice1.text);
+        pollObj.choice2.add(widget.choice2.text);
+        pollObj.choice3.add(widget.choice3.text);
+        pollObj.choice4.add(widget.choice4.text);
       }
     }
     if (questions.isNotEmpty &&
@@ -370,30 +442,33 @@ class _HostPageState extends State<HostPage> {
         },
       ),
     );
-    Widget result = Flexible(
-        flex: 2,
-        child: Card(
-          child: ListView.builder(
-            itemCount: questions.length,
-            itemBuilder: (_, index) {
-              return Card(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      margin: const EdgeInsets.all(20.0),
-                      child: Text(
-                          "#${index + 1}   ${questions[index]}: "
-                          "${choice1[index]}, ${choice2[index]},"
-                          " ${choice3[index]}, ${choice4[index]}",
-                          style: const TextStyle(fontSize: 20)),
-                    ),
-                  ],
-                ),
-              );
-            },
+    //TODO: Make screen to show code and button to start game, get rid of display questions screen
+    var roomCode = "will get from server";
+    Widget startGame = Column(
+      children: <Widget>[
+        Container(
+          margin: const EdgeInsets.all(25),
+          child: const Text(
+            "Room code:",
+            style: TextStyle(fontSize: 42),
           ),
-        ));
+        ),
+        Text(roomCode, style: const TextStyle(fontSize: 72)),
+        Container(
+          margin: const EdgeInsets.all(50),
+          child: ElevatedButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const GamePage(),
+              ),
+            ),
+            child: const Text("Start"),
+          ),
+        ),
+      ],
+    );
+
     Widget submitButton = Container(
       margin: const EdgeInsets.all(20),
       child: ElevatedButton(
@@ -417,7 +492,7 @@ class _HostPageState extends State<HostPage> {
                 : Navigator.push(context, goToHome)),
       ),
       body: Column(children: <Widget>[
-        questions.isEmpty ? dynamicTextField : result,
+        questions.isEmpty ? dynamicTextField : startGame,
         questions.isEmpty ? submitButton : Container(),
       ]),
       floatingActionButton: _showButton
@@ -439,7 +514,7 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  bool _fieldVisible = true;
+  var _fieldVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -457,7 +532,7 @@ class _HomepageState extends State<Homepage> {
             Container(
               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               child: const Text(
-                'Welcome to the polling system!',
+                'Welcome to RoboPoll!',
                 style: TextStyle(
                   fontSize: 44,
                   fontWeight: FontWeight.bold,
@@ -530,8 +605,7 @@ class _HomepageState extends State<Homepage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          AnswerPage(title: 'game $code'),
+                                      builder: (context) => const AnswerPage(),
                                     ),
                                   );
                                 } else {
@@ -580,7 +654,7 @@ void _confirmQuitDialog(BuildContext context, PageRoute route) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Warning'),
+        title: const Text('Hey!'),
         content: const Text('Are you sure you want to quit?'),
         actions: <Widget>[
           TextButton(
