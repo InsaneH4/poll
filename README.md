@@ -1,3 +1,3 @@
-# poll
+# RoboPoll
 
-Mobile and web app for polling system, made with flutter
+A user friendly cross platform app for creating polls, made with Flutter
