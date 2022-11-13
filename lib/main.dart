@@ -19,12 +19,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-          fixedSize: (const Size(175, 50)),
-          backgroundColor: Colors.greenAccent,
-          foregroundColor: Colors.black,
-          textStyle: const TextStyle(fontSize: 32),
-        )),
+          style: ElevatedButton.styleFrom(
+            fixedSize: (const Size(175, 50)),
+            backgroundColor: Colors.greenAccent,
+            foregroundColor: Colors.black,
+            textStyle: const TextStyle(fontSize: 32),
+          ),
+        ),
         primarySwatch: Colors.indigo,
       ),
       home: const Homepage(),
@@ -188,7 +189,17 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
+  var resultsVisible = false;
   var responseNum = 0;
+  var opt1num = 0, opt2num = 0, opt3num = 0, opt4num = 0;
+
+  void resultsVis() {
+    setState(
+      () {
+        resultsVisible = !resultsVisible;
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -210,15 +221,68 @@ class _GamePageState extends State<GamePage> {
             const Text("Question will be here", style: TextStyle(fontSize: 48)),
             Text("$responseNum responses",
                 style: const TextStyle(fontSize: 28)),
-            SizedBox(
-              width: 250,
-              height: 75,
-              child: ElevatedButton(
-                child: const Text(
-                  "Show results",
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+            Visibility(
+              visible: !resultsVisible,
+              child: SizedBox(
+                width: 250,
+                height: 75,
+                child: ElevatedButton(
+                  child: const Text(
+                    "Show results",
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () => resultsVis(),
                 ),
-                onPressed: () => _tempDialog(context),
+              ),
+            ),
+            Visibility(
+              visible: resultsVisible,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Text(
+                            "Option 1: $opt1num responses",
+                            style: const TextStyle(fontSize: 32),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 25),
+                            child: Text(
+                              "Option 2: $opt2num responses",
+                              style: const TextStyle(fontSize: 32),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: <Widget>[
+                          Text(
+                            "Option 3: $opt3num responses",
+                            style: const TextStyle(fontSize: 32),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 25),
+                            child: Text(
+                              "Option 4: $opt4num responses",
+                              style: const TextStyle(fontSize: 32),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(50),
+                    child: ElevatedButton(
+                      child: const Text("Next"),
+                      onPressed: () => resultsVis(),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
