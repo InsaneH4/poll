@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 final _channel = WebSocketChannel.connect(Uri.parse("ws://localhost:8080"));
-final goToHome = MaterialPageRoute(builder: (context) => const Homepage());
 
 void main() {
   runApp(const MyApp());
@@ -60,8 +59,8 @@ class _AnswerPageState extends State<AnswerPage> {
     );
   }
 
-  final goToHome = MaterialPageRoute(builder: (context) => const Homepage());
   var _isPollStart = false;
+  var goToHome = MaterialPageRoute(builder: (context) => const Homepage());
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +69,7 @@ class _AnswerPageState extends State<AnswerPage> {
         title: Text(widget.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => _confirmQuitDialog(
-            context,
-            goToHome,
-          ),
+          onPressed: () => Navigator.push(context, goToHome),
         ),
       ),
       body: Center(
@@ -192,6 +188,7 @@ class _GamePageState extends State<GamePage> {
   var resultsVisible = false;
   var responseNum = 0;
   var opt1num = 0, opt2num = 0, opt3num = 0, opt4num = 0;
+  var goToHome = MaterialPageRoute(builder: (context) => const Homepage());
 
   void resultsVis() {
     setState(
@@ -208,10 +205,7 @@ class _GamePageState extends State<GamePage> {
         title: Text(widget.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => _confirmQuitDialog(
-            context,
-            goToHome,
-          ),
+          onPressed: () => Navigator.push(context, goToHome),
         ),
       ),
       body: Center(
@@ -542,17 +536,14 @@ class _HostPageState extends State<HostPage> {
         ),
       ),
     );
+    var goToHome = MaterialPageRoute(builder: (context) => const Homepage());
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => dynamicList.isNotEmpty
-                ? _confirmQuitDialog(
-                    context,
-                    goToHome,
-                  )
-                : Navigator.push(context, goToHome)),
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.push(context, goToHome),
+        ),
       ),
       body: Column(children: <Widget>[
         questions.isEmpty ? dynamicTextField : startGame,
@@ -650,32 +641,33 @@ class _HomepageState extends State<Homepage> {
                           width: 250,
                           height: 75,
                           child: TextField(
-                              maxLines: 1,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 36),
-                              decoration: const InputDecoration(
-                                border: UnderlineInputBorder(),
-                                hintText: 'Room Code',
-                                hintStyle: TextStyle(fontSize: 36),
-                              ),
-                              textCapitalization: TextCapitalization.characters,
-                              autocorrect: false,
-                              enableSuggestions: false,
-                              controller: codeFieldCont,
-                              onEditingComplete: () {
-                                if (codeFieldCont.text.isNotEmpty) {
-                                  code = codeFieldCont.text;
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const AnswerPage(),
-                                    ),
-                                  );
-                                } else {
-                                  _wrongCodeDialog(context);
-                                }
-                                //^ Will get title from poll name
-                              }),
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 36),
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              hintText: 'Room Code',
+                              hintStyle: TextStyle(fontSize: 36),
+                            ),
+                            textCapitalization: TextCapitalization.characters,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            controller: codeFieldCont,
+                            onEditingComplete: () {
+                              if (codeFieldCont.text.isNotEmpty) {
+                                code = codeFieldCont.text;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AnswerPage(),
+                                  ),
+                                );
+                              } else {
+                                _wrongCodeDialog(context);
+                              }
+                              //^ Will get title from poll name
+                            },
+                          ),
                         ),
                 ),
               ),
@@ -705,28 +697,6 @@ void _wrongCodeDialog(BuildContext context) {
           TextButton(
             onPressed: () => Navigator.pop(context, 'OK'),
             child: const Text('OK'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void _confirmQuitDialog(BuildContext context, PageRoute route) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Hey!'),
-        content: const Text('Are you sure you want to quit?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('NO'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.push(context, route),
-            child: const Text('YES'),
           ),
         ],
       );
