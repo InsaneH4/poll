@@ -1,10 +1,21 @@
 //import 'package:ethan/cha.dart';
+
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-final _channel = WebSocketChannel.connect(Uri.parse("ws://localhost:8080"));
+String streamStr = "";
+final channel = WebSocketChannel.connect(
+  Uri.parse("wss://robopoll-server.herokuapp.com"),
+);
+StreamSubscription wsStream = channel.stream.listen((message) {
+  print(streamStr);
+  streamStr = message;
+});
 
 void main() {
+  wsStream.resume();
+  channel.sink.add("test");
   runApp(const MyApp());
 }
 
@@ -234,40 +245,30 @@ class _GamePageState extends State<GamePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Text(
-                            "Option 1: $opt1num responses",
-                            style: const TextStyle(fontSize: 32),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 25),
-                            child: Text(
-                              "Option 2: $opt2num responses",
-                              style: const TextStyle(fontSize: 32),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: <Widget>[
-                          Text(
-                            "Option 3: $opt3num responses",
-                            style: const TextStyle(fontSize: 32),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 25),
-                            child: Text(
-                              "Option 4: $opt4num responses",
-                              style: const TextStyle(fontSize: 32),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  Text(
+                    "Option 1: $opt1num responses",
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      "Option 2: $opt2num responses",
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      "Option 3: $opt3num responses",
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      "Option 4: $opt4num responses",
+                      style: const TextStyle(fontSize: 20),
+                    ),
                   ),
                   Container(
                     margin: const EdgeInsets.all(50),
@@ -296,18 +297,13 @@ class HostPage extends StatefulWidget {
 }
 
 class PollObj {
-  List<String> questions;
-  List<String> choice1;
-  List<String> choice2;
-  List<String> choice3;
-  List<String> choice4;
+  String question;
+  List<String> options;
 
-  PollObj(
-      {required this.questions,
-      required this.choice1,
-      required this.choice2,
-      required this.choice3,
-      required this.choice4});
+  PollObj({
+    required this.question,
+    required this.options,
+  });
 }
 
 class DynamicWidget extends StatelessWidget {
@@ -404,18 +400,8 @@ class DynamicWidget extends StatelessWidget {
 class _HostPageState extends State<HostPage> {
   var _showButton = true;
   List<DynamicWidget> dynamicList = [];
-  List<String> questions = [];
-  List<String> choice1 = [];
-  List<String> choice2 = [];
-  List<String> choice3 = [];
-  List<String> choice4 = [];
-  late PollObj pollObj = PollObj(
-    questions: questions,
-    choice1: choice1,
-    choice2: choice2,
-    choice3: choice3,
-    choice4: choice4,
-  );
+  List<PollObj> questions = [];
+  late PollObj pollObject = PollObj(question: "", options: []);
 
   void _emptyQuestionsDialog(BuildContext context) {
     showDialog(
@@ -437,36 +423,30 @@ class _HostPageState extends State<HostPage> {
 
   void _addDynamic() {
     if (questions.isNotEmpty) {
-      pollObj.questions = [];
-      pollObj.choice1 = [];
-      pollObj.choice2 = [];
-      pollObj.choice3 = [];
-      pollObj.choice4 = [];
       dynamicList = [];
     }
     setState(() {});
     dynamicList.add(DynamicWidget());
   }
 
+  String roomCode = "";
+
   void submitData() {
+    roomCode = streamStr.substring(streamStr.indexOf("=") + 1);
     for (var widget in dynamicList) {
       if (widget.question.text.isNotEmpty &&
           widget.choice1.text.isNotEmpty &&
           widget.choice2.text.isNotEmpty &&
           widget.choice3.text.isNotEmpty &&
           widget.choice4.text.isNotEmpty) {
-        pollObj.questions.add(widget.question.text);
-        pollObj.choice1.add(widget.choice1.text);
-        pollObj.choice2.add(widget.choice2.text);
-        pollObj.choice3.add(widget.choice3.text);
-        pollObj.choice4.add(widget.choice4.text);
+        pollObject.question = (widget.question.text);
+        pollObject.options.add(widget.choice1.text);
+        pollObject.options.add(widget.choice2.text);
+        pollObject.options.add(widget.choice3.text);
+        pollObject.options.add(widget.choice4.text);
       }
     }
-    if (questions.isNotEmpty &&
-        choice1.isNotEmpty &&
-        choice2.isNotEmpty &&
-        choice3.isNotEmpty &&
-        choice4.isNotEmpty) {
+    if (pollObject.question.isNotEmpty) {
       _showButton = false;
     } else {
       _emptyQuestionsDialog(context);
@@ -500,7 +480,6 @@ class _HostPageState extends State<HostPage> {
         },
       ),
     );
-    var roomCode = "will get from server";
     Widget startGame = Column(
       children: <Widget>[
         Container(
@@ -546,8 +525,8 @@ class _HostPageState extends State<HostPage> {
         ),
       ),
       body: Column(children: <Widget>[
-        questions.isEmpty ? dynamicTextField : startGame,
-        questions.isEmpty ? submitButton : Container(),
+        pollObject.question.isEmpty ? dynamicTextField : startGame,
+        pollObject.question.isEmpty ? submitButton : Container(),
       ]),
       floatingActionButton: _showButton
           ? FloatingActionButton(
@@ -565,6 +544,16 @@ class _HomepageState extends State<Homepage> {
       () {
         _fieldVisible = !_fieldVisible;
       },
+    );
+  }
+
+  void hostStart() {
+    channel.sink.add("hostInit");
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HostPage(),
+      ),
     );
   }
 
@@ -599,12 +588,7 @@ class _HomepageState extends State<Homepage> {
                 width: 250,
                 height: 75,
                 child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HostPage(),
-                          ),
-                        ),
+                    onPressed: () => hostStart(),
                     child: const Text("Create Poll",
                         style: TextStyle(fontSize: 36))),
               ),
@@ -681,7 +665,7 @@ class _HomepageState extends State<Homepage> {
 
 void _answerSubmit(String choice) {
   if (choice == "A" || choice == "B" || choice == "C" || choice == "D") {
-    _channel.sink.add("User answered $choice"); //Sends data to websocket
+    channel.sink.add("User answered $choice"); //Sends data to websocket
     print("$choice sent to server");
   }
 }
