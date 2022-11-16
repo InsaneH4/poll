@@ -14,9 +14,11 @@ var user = false;
 var currQ = 0;
 List<PollObj> questions = [];
 ValueNotifier<List<int>> responses = ValueNotifier([0, 0, 0, 0]);
+ValueNotifier<String> serverQ = ValueNotifier("");
 final channel = WebSocketChannel.connect(
   Uri.parse("wss://robopoll-server.herokuapp.com"),
 );
+
 StreamSubscription wsStream = channel.stream.listen((message) {
   streamStr = message;
   if (streamStr.contains('userAnswered')) {
@@ -53,6 +55,10 @@ StreamSubscription wsStream = channel.stream.listen((message) {
   } else if (streamStr.contains('userAnswered')) {
     responseNum.value = int.parse(
         RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1) as String);
+  } else if (streamStr.contains('newQuestion')) {
+    //serverQ.value = streamStr;
+  } else if (streamStr.contains('goodbye')) {
+    //serverQ.value = "";
   }
   print(streamStr);
   streamStr = "";
@@ -106,16 +112,6 @@ class AnswerPage extends StatefulWidget {
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-  void pollStarted() {
-    channel.sink.add('hostStartGame?code=$roomCode');
-    setState(
-      () {
-        _isPollStart = !_isPollStart;
-      },
-    );
-  }
-
-  var _isPollStart = false;
   var goToHome = MaterialPageRoute(builder: (context) => const Homepage());
 
   @override
@@ -135,97 +131,99 @@ class _AnswerPageState extends State<AnswerPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Text(
-              _isPollStart
-                  ? 'Question from poll will be listed here'
-                  : 'Waiting for host to start the poll',
-              style: const TextStyle(
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            Visibility(
-                visible: !_isPollStart,
-                child: ElevatedButton(
-                  child: const Text("start poll"),
-                  onPressed: () => pollStarted(),
-                )),
-            Visibility(
-              visible: _isPollStart,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            ValueListenableBuilder(
+              valueListenable: serverQ,
+              builder: (context, value, _) {
+                if (value.isNotEmpty && value.contains("newQuestion")) {
+                  var question = jsonDecode(RegExp(r'question=(.*)')
+                      .firstMatch(value)!
+                      .group(1) as String);
+                  return Column(
                     children: <Widget>[
-                      SizedBox(
-                        width: 175,
-                        height: 175,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.red,
-                            textStyle: const TextStyle(
-                                fontSize: 150, fontWeight: FontWeight.bold),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          SizedBox(
+                            width: 175,
+                            height: 175,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.red,
+                                textStyle: const TextStyle(
+                                    fontSize: 150, fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () => _answerSubmit("0"),
+                              child: Text(question.options[0]),
+                            ),
                           ),
-                          onPressed: () => _answerSubmit("A"),
-                          child: const Text("A"),
-                        ),
+                          SizedBox(
+                            width: 175,
+                            height: 175,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.blue,
+                                textStyle: const TextStyle(
+                                    fontSize: 150, fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () => _answerSubmit("1"),
+                              child: Text(question.options[1]),
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        width: 175,
-                        height: 175,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.blue,
-                            textStyle: const TextStyle(
-                                fontSize: 150, fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: () => _answerSubmit("B"),
-                          child: const Text("B"),
+                      Container(
+                        margin: const EdgeInsets.only(top: 25),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            SizedBox(
+                              width: 175,
+                              height: 175,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.amber,
+                                  textStyle: const TextStyle(
+                                      fontSize: 150,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                onPressed: () => _answerSubmit("2"),
+                                child: Text(question.options[2]),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 175,
+                              height: 175,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.green,
+                                  textStyle: const TextStyle(
+                                      fontSize: 150,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                onPressed: () => _answerSubmit("3"),
+                                child: Text(question.options[3]),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 25),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        SizedBox(
-                          width: 175,
-                          height: 175,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.amber,
-                              textStyle: const TextStyle(
-                                  fontSize: 150, fontWeight: FontWeight.bold),
-                            ),
-                            onPressed: () => _answerSubmit("C"),
-                            child: const Text("C"),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 175,
-                          height: 175,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.green,
-                              textStyle: const TextStyle(
-                                  fontSize: 150, fontWeight: FontWeight.bold),
-                            ),
-                            onPressed: () => _answerSubmit("D"),
-                            child: const Text("D"),
-                          ),
-                        ),
-                      ],
+                  );
+                } else {
+                  return const Text(
+                    'Waiting for host to start the poll',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                ],
-              ),
+                    textAlign: TextAlign.center,
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -657,27 +655,30 @@ class _HomepageState extends State<Homepage> {
   }
 
   var _fieldVisible = true;
-  // Future<void> codeSubmit(var codeFieldCont) async {
-  //   if (codeFieldCont.text.isNotEmpty) {
-  //     roomCode = codeFieldCont.text;
-  //     channel.sink.add('userInit?code=$roomCode');
-  //     await Future.delayed(const Duration(seconds: 2));
-  //     if (user) {
-  //       // ignore: use_build_context_synchronously
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => const AnswerPage(),
-  //         ),
-  //       );
-  //     } else {
-  //       // ignore: use_build_context_synchronously
-  //       _wrongCodeDialog(context);
-  //     }
-  //   } else {
-  //     _wrongCodeDialog(context);
-  //   }
-  // }
+
+  Future<void> codeSubmit(var codeFieldCont) async {
+    if (codeFieldCont.text.isNotEmpty) {
+      roomCode = codeFieldCont.text;
+      channel.sink.add('userInit?code=$roomCode');
+      await Future.delayed(const Duration(seconds: 2));
+      if (user) {
+        // ignore: use_build_context_synchronously
+        wsStream.pause();
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AnswerPage(),
+          ),
+        );
+      } else {
+        // ignore: use_build_context_synchronously
+        _wrongCodeDialog(context);
+      }
+    } else {
+      _wrongCodeDialog(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -756,35 +757,7 @@ class _HomepageState extends State<Homepage> {
                             autocorrect: false,
                             enableSuggestions: false,
                             controller: codeFieldCont,
-                            onEditingComplete: () async => {
-                              if (codeFieldCont.text.isNotEmpty)
-                                {
-                                  roomCode = codeFieldCont.text.toUpperCase(),
-                                  channel.sink.add('userInit?code=$roomCode'),
-                                  // await Future.delayed(
-                                  //     const Duration(seconds: 2)),
-                                  if (user)
-                                    {
-                                      // ignore: use_build_context_synchronously
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const AnswerPage(),
-                                        ),
-                                      ),
-                                    }
-                                  else
-                                    {
-                                      // ignore: use_build_context_synchronously
-                                      //_wrongCodeDialog(context),
-                                    }
-                                }
-                              else
-                                {
-                                  //_wrongCodeDialog(context),
-                                }
-                            },
+                            onEditingComplete: () => codeSubmit(codeFieldCont),
                           ),
                         ),
                 ),
@@ -798,11 +771,8 @@ class _HomepageState extends State<Homepage> {
 }
 
 void _answerSubmit(String choice) {
-  if (choice == "A" || choice == "B" || choice == "C" || choice == "D") {
-    channel.sink.add(
-        "userSubmitAnswer?code=$roomCode&answer=$choice"); //Sends data to websocket
-    print("$choice sent to server");
-  }
+  channel.sink.add("userSubmitAnswer?code=$roomCode&answer=$choice");
+  print("$choice sent to server");
 }
 
 void _wrongCodeDialog(BuildContext context) {
