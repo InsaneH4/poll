@@ -1,21 +1,65 @@
 //import 'package:ethan/cha.dart';
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 String streamStr = "";
+String roomCode = "";
+String errMsg = "";
+ValueNotifier<int> responseNum = ValueNotifier(0);
+var host = false;
+var user = false;
+var currQ = 0;
+List<PollObj> questions = [];
+ValueNotifier<List<int>> responses = ValueNotifier([0, 0, 0, 0]);
 final channel = WebSocketChannel.connect(
   Uri.parse("wss://robopoll-server.herokuapp.com"),
 );
 StreamSubscription wsStream = channel.stream.listen((message) {
-  print(streamStr);
   streamStr = message;
+  if (streamStr.contains('userAnswered')) {
+    var regex = RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1);
+    responseNum.value = int.parse(regex!);
+  } else if (streamStr.contains('initStatus')) {
+    if (!streamStr.contains('error')) {
+      if (streamStr.contains('code')) {
+        roomCode =
+            RegExp(r'code=(.*)').firstMatch(streamStr)!.group(1) as String;
+        host = true;
+      } else {
+        user = true;
+      }
+    } else {
+      if (streamStr.contains("codeNotFound")) {
+        errMsg = "The code submitted doesn't exist.";
+      } else if (streamStr.contains("alreadyInGame")) {
+        errMsg = "You are already in a poll!";
+      } else if (streamStr.contains("gameAlreadyStarted")) {
+        errMsg = "The poll has already started.";
+      } else {
+        errMsg = "idek what happened";
+      }
+    }
+  } else if (streamStr.contains('startStatus')) {
+    currQ = 0;
+  } else if (streamStr.contains('answerStatus')) {
+    responses.value = (jsonDecode(RegExp(r'results=(.*)')
+            .firstMatch(streamStr)!
+            .group(1) as String) as List)
+        .map((i) => int.parse(i.toString()))
+        .toList();
+  } else if (streamStr.contains('userAnswered')) {
+    responseNum.value = int.parse(
+        RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1) as String);
+  }
+  print(streamStr);
+  streamStr = "";
 });
 
 void main() {
   wsStream.resume();
-  channel.sink.add("test");
   runApp(const MyApp());
 }
 
@@ -63,6 +107,7 @@ class AnswerPage extends StatefulWidget {
 
 class _AnswerPageState extends State<AnswerPage> {
   void pollStarted() {
+    channel.sink.add('hostStartGame?code=$roomCode');
     setState(
       () {
         _isPollStart = !_isPollStart;
@@ -80,7 +125,10 @@ class _AnswerPageState extends State<AnswerPage> {
         title: Text(widget.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.push(context, goToHome),
+          onPressed: () => {
+            channel.sink.add('leaveGame?code=$roomCode'),
+            Navigator.push(context, goToHome)
+          },
         ),
       ),
       body: Center(
@@ -196,15 +244,28 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
+  //resultsVisible is what determines what widgets are shown
+  //and it changes when the host presses showResults
   var resultsVisible = false;
-  var responseNum = 0;
-  var opt1num = 0, opt2num = 0, opt3num = 0, opt4num = 0;
   var goToHome = MaterialPageRoute(builder: (context) => const Homepage());
-
-  void resultsVis() {
+  void resultsVis(var status) {
+    if (status) {
+      channel.sink.add('hostShowAnswers?code=$roomCode');
+    } else {
+      channel.sink.add('hostNextQuestion?code=$roomCode');
+      if (currQ + 1 == questions.length) {
+        Navigator.push(
+          context,
+          goToHome,
+        );
+      }
+    }
     setState(
       () {
         resultsVisible = !resultsVisible;
+        if (!status && currQ + 1 < questions.length) {
+          currQ++;
+        }
       },
     );
   }
@@ -216,16 +277,32 @@ class _GamePageState extends State<GamePage> {
         title: Text(widget.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.push(context, goToHome),
+          onPressed: () => {
+            channel.sink.add('endGame?code=$roomCode'),
+            Navigator.push(context, goToHome)
+          },
         ),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            const Text("Question will be here", style: TextStyle(fontSize: 48)),
-            Text("$responseNum responses",
-                style: const TextStyle(fontSize: 28)),
+            Text(questions[currQ].question,
+                style: const TextStyle(fontSize: 48)),
+            Text(questions[currQ].options[0],
+                style: const TextStyle(fontSize: 24, color: Colors.red)),
+            Text(questions[currQ].options[1],
+                style: const TextStyle(fontSize: 24, color: Colors.blue)),
+            Text(questions[currQ].options[2],
+                style: const TextStyle(fontSize: 24, color: Colors.amber)),
+            Text(questions[currQ].options[3],
+                style: const TextStyle(fontSize: 24, color: Colors.green)),
+            ValueListenableBuilder(
+                valueListenable: responseNum,
+                builder: ((context, value, child) {
+                  return Text("$value responses",
+                      style: const TextStyle(fontSize: 28));
+                })),
             Visibility(
               visible: !resultsVisible,
               child: SizedBox(
@@ -236,7 +313,7 @@ class _GamePageState extends State<GamePage> {
                     "Show results",
                     style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
-                  onPressed: () => resultsVis(),
+                  onPressed: () => resultsVis(true),
                 ),
               ),
             ),
@@ -245,36 +322,47 @@ class _GamePageState extends State<GamePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text(
-                    "Option 1: $opt1num responses",
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      "Option 2: $opt2num responses",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      "Option 3: $opt3num responses",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      "Option 4: $opt4num responses",
-                      style: const TextStyle(fontSize: 20),
-                    ),
+                  ValueListenableBuilder(
+                    valueListenable: responses,
+                    builder: ((context, value, child) {
+                      return Column(
+                        children: <Widget>[
+                          Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              child: Text(
+                                "${questions[currQ].options[0]}: ${responses.value[0]} responses",
+                                style: const TextStyle(fontSize: 24),
+                              )),
+                          Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: Text(
+                              "${questions[currQ].options[1]}: ${responses.value[1]} responses",
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: Text(
+                              "${questions[currQ].options[2]}: ${responses.value[2]} responses",
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: Text(
+                              "${questions[currQ].options[3]}: ${responses.value[3]} responses",
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
                   ),
                   Container(
                     margin: const EdgeInsets.all(50),
                     child: ElevatedButton(
                       child: const Text("Next"),
-                      onPressed: () => resultsVis(),
+                      onPressed: () => resultsVis(false),
                     ),
                   ),
                 ],
@@ -319,7 +407,6 @@ class DynamicWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(0, 10, 0, 10), //haha
-
       child: Column(
         children: <Widget>[
           Row(
@@ -400,8 +487,6 @@ class DynamicWidget extends StatelessWidget {
 class _HostPageState extends State<HostPage> {
   var _showButton = true;
   List<DynamicWidget> dynamicList = [];
-  List<PollObj> questions = [];
-  late PollObj pollObject = PollObj(question: "", options: []);
 
   void _emptyQuestionsDialog(BuildContext context) {
     showDialog(
@@ -429,11 +514,10 @@ class _HostPageState extends State<HostPage> {
     dynamicList.add(DynamicWidget());
   }
 
-  String roomCode = "";
-
+  PollObj pollObject = PollObj(question: "", options: []);
   void submitData() {
-    roomCode = streamStr.substring(streamStr.indexOf("=") + 1);
     for (var widget in dynamicList) {
+      pollObject = PollObj(question: "", options: []);
       if (widget.question.text.isNotEmpty &&
           widget.choice1.text.isNotEmpty &&
           widget.choice2.text.isNotEmpty &&
@@ -444,12 +528,17 @@ class _HostPageState extends State<HostPage> {
         pollObject.options.add(widget.choice2.text);
         pollObject.options.add(widget.choice3.text);
         pollObject.options.add(widget.choice4.text);
+        questions.add(pollObject);
       }
     }
-    if (pollObject.question.isNotEmpty) {
-      _showButton = false;
-    } else {
+    if (questions.isEmpty) {
       _emptyQuestionsDialog(context);
+    } else {
+      for (var question in questions) {
+        channel.sink.add(
+            'hostSaveQuestion?code=$roomCode&question=${question.question}&options=${question.options[0]}&options=${question.options[1]}&options=${question.options[2]}&options=${question.options[3]}');
+      }
+      streamStr = "";
     }
     setState(() {});
   }
@@ -493,12 +582,15 @@ class _HostPageState extends State<HostPage> {
         Container(
           margin: const EdgeInsets.all(50),
           child: ElevatedButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const GamePage(),
-              ),
-            ),
+            onPressed: () => {
+              channel.sink.add('hostStartGame?code=$roomCode'),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const GamePage(),
+                ),
+              )
+            },
             child: const Text("Start"),
           ),
         ),
@@ -516,12 +608,18 @@ class _HostPageState extends State<HostPage> {
       ),
     );
     var goToHome = MaterialPageRoute(builder: (context) => const Homepage());
+    void returnToHome() {
+      channel.sink.add('endGame?code=$roomCode');
+      host = false;
+      Navigator.push(context, goToHome);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.push(context, goToHome),
+          onPressed: () => returnToHome(),
         ),
       ),
       body: Column(children: <Widget>[
@@ -548,6 +646,7 @@ class _HomepageState extends State<Homepage> {
   }
 
   void hostStart() {
+    host = true;
     channel.sink.add("hostInit");
     Navigator.push(
       context,
@@ -558,11 +657,31 @@ class _HomepageState extends State<Homepage> {
   }
 
   var _fieldVisible = true;
+  // Future<void> codeSubmit(var codeFieldCont) async {
+  //   if (codeFieldCont.text.isNotEmpty) {
+  //     roomCode = codeFieldCont.text;
+  //     channel.sink.add('userInit?code=$roomCode');
+  //     await Future.delayed(const Duration(seconds: 2));
+  //     if (user) {
+  //       // ignore: use_build_context_synchronously
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => const AnswerPage(),
+  //         ),
+  //       );
+  //     } else {
+  //       // ignore: use_build_context_synchronously
+  //       _wrongCodeDialog(context);
+  //     }
+  //   } else {
+  //     _wrongCodeDialog(context);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     final codeFieldCont = TextEditingController();
-    String code;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -637,19 +756,34 @@ class _HomepageState extends State<Homepage> {
                             autocorrect: false,
                             enableSuggestions: false,
                             controller: codeFieldCont,
-                            onEditingComplete: () {
-                              if (codeFieldCont.text.isNotEmpty) {
-                                code = codeFieldCont.text;
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AnswerPage(),
-                                  ),
-                                );
-                              } else {
-                                _wrongCodeDialog(context);
-                              }
-                              //^ Will get title from poll name
+                            onEditingComplete: () async => {
+                              if (codeFieldCont.text.isNotEmpty)
+                                {
+                                  roomCode = codeFieldCont.text.toUpperCase(),
+                                  channel.sink.add('userInit?code=$roomCode'),
+                                  // await Future.delayed(
+                                  //     const Duration(seconds: 2)),
+                                  if (user)
+                                    {
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const AnswerPage(),
+                                        ),
+                                      ),
+                                    }
+                                  else
+                                    {
+                                      // ignore: use_build_context_synchronously
+                                      //_wrongCodeDialog(context),
+                                    }
+                                }
+                              else
+                                {
+                                  //_wrongCodeDialog(context),
+                                }
                             },
                           ),
                         ),
@@ -665,7 +799,8 @@ class _HomepageState extends State<Homepage> {
 
 void _answerSubmit(String choice) {
   if (choice == "A" || choice == "B" || choice == "C" || choice == "D") {
-    channel.sink.add("User answered $choice"); //Sends data to websocket
+    channel.sink.add(
+        "userSubmitAnswer?code=$roomCode&answer=$choice"); //Sends data to websocket
     print("$choice sent to server");
   }
 }
@@ -676,7 +811,7 @@ void _wrongCodeDialog(BuildContext context) {
     builder: (BuildContext context) {
       return AlertDialog(
         title: const Text('Umm...'),
-        content: const Text("You didn't enter a valid code"),
+        content: Text(errMsg),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context, 'OK'),
