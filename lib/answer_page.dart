@@ -154,11 +154,11 @@ void userStart() {
   if (user) {
     isStarted = true;
   }
-  streamStr = "";
+  flushWsStream();
 }
 
 void pollEnd(context) {
-  streamStr = "";
+  flushWsStream();
   roomCode = "";
   user = false;
   showDialog<void>(

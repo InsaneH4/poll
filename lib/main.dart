@@ -62,7 +62,7 @@ StreamSubscription wsStream = channel.stream.listen((message) {
     pollEnd(GlobalContextService.navigatorKey.currentContext);
   }
   print(streamStr);
-  streamStr = "";
+  flushWsStream();
 });
 
 void main() {
@@ -96,4 +96,8 @@ class MyApp extends StatelessWidget {
       home: const Homepage(),
     );
   }
+}
+
+void flushWsStream() {
+  streamStr = "";
 }

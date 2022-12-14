@@ -169,7 +169,7 @@ class _CreatePageState extends State<CreatePage> {
         channel.sink.add(
             'hostSaveQuestion?code=$roomCode&question=${question.question}&options=${question.options[0]}&options=${question.options[1]}&options=${question.options[2]}&options=${question.options[3]}');
       }
-      streamStr = "";
+      flushWsStream();
     }
     setState(() {});
   }
