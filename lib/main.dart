@@ -7,7 +7,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 String streamStr = "";
 String roomCode = "";
-String errMsg = "";
+String errMsg = "Unknown";
 ValueNotifier<int> responseNum = ValueNotifier(0);
 var host = false;
 var user = false;
@@ -30,7 +30,7 @@ StreamSubscription wsStream = channel.stream.listen((message) {
         roomCode =
             RegExp(r'code=(.*)').firstMatch(streamStr)!.group(1) as String;
         host = true;
-      } else {
+      } else if(streamStr.contains('status=success')) {
         user = true;
       }
     } else {

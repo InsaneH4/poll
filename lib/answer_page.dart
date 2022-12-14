@@ -22,9 +22,11 @@ class _AnswerPageState extends State<AnswerPage> {
         title: Text(widget.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => {
-            channel.sink.add('leaveGame?code=$roomCode'),
-            Navigator.push(context, goToHome)
+          onPressed: () {
+            user = false;
+            roomCode = "";
+            channel.sink.add('leaveGame?code=$roomCode');
+            Navigator.push(context, goToHome);
           },
         ),
       ),

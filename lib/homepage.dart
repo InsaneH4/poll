@@ -35,15 +35,17 @@ class _HomepageState extends State<Homepage> {
   var _fieldVisible = true;
 
   Future<void> codeSubmit(var codeFieldCont) async {
-    if (codeFieldCont.text.isNotEmpty) {
-      roomCode = codeFieldCont.text;
+    roomCode = codeFieldCont.text;
+    if (codeFieldCont.text.isNotEmpty && codeFieldCont.text.length == 4) {
       channel.sink.add('userInit?code=$roomCode');
-      const loadBar = SnackBar(content: Text("Connecting..."));
+      roomCode = "";
+      const loadBar = SnackBar(
+        content: Text("Connecting..."),
+        duration: Duration(seconds: 1),
+      );
       ScaffoldMessenger.of(context).showSnackBar(loadBar);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
       if (user) {
-        // ignore: use_build_context_synchronously
-        wsStream.pause();
         // ignore: use_build_context_synchronously
         Navigator.push(
           context,
@@ -56,6 +58,7 @@ class _HomepageState extends State<Homepage> {
         _wrongCodeDialog(context);
       }
     } else {
+      errMsg = "Invalid code";
       _wrongCodeDialog(context);
     }
   }
