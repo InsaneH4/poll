@@ -7,7 +7,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 String streamStr = "";
 String roomCode = "";
-String errMsg = "error";
+String errMsg = "";
 ValueNotifier<int> responseNum = ValueNotifier(0);
 var host = false;
 var user = false;
@@ -18,7 +18,7 @@ ValueNotifier<String> serverQ = ValueNotifier("");
 final channel = WebSocketChannel.connect(
   Uri.parse("wss://robopoll-server.herokuapp.com"),
 );
-
+//TODO: notify user when poll starts
 StreamSubscription wsStream = channel.stream.listen((message) {
   streamStr = message;
   if (streamStr.contains('userAnswered')) {
@@ -35,13 +35,13 @@ StreamSubscription wsStream = channel.stream.listen((message) {
       }
     } else {
       if (streamStr.contains("codeNotFound")) {
-        errMsg = "The code submitted doesn't exist.";
+        errMsg = "Invalid code";
       } else if (streamStr.contains("alreadyInGame")) {
         errMsg = "You are already in a poll!";
       } else if (streamStr.contains("gameAlreadyStarted")) {
         errMsg = "The poll has already started.";
       } else {
-        errMsg = "idek what happened";
+        errMsg = "Something suspicious happened";
       }
     }
   } else if (streamStr.contains('startStatus')) {

@@ -12,12 +12,10 @@ class Homepage extends StatefulWidget {
   State<Homepage> createState() => _HomepageState();
 }
 
-
-
 class _HomepageState extends State<Homepage> {
   void showField() {
     setState(
-          () {
+      () {
         _fieldVisible = !_fieldVisible;
       },
     );
@@ -40,6 +38,8 @@ class _HomepageState extends State<Homepage> {
     if (codeFieldCont.text.isNotEmpty) {
       roomCode = codeFieldCont.text;
       channel.sink.add('userInit?code=$roomCode');
+      const loadBar = SnackBar(content: Text("Connecting..."));
+      ScaffoldMessenger.of(context).showSnackBar(loadBar);
       await Future.delayed(const Duration(seconds: 2));
       if (user) {
         // ignore: use_build_context_synchronously
@@ -99,47 +99,47 @@ class _HomepageState extends State<Homepage> {
                   transitionBuilder:
                       (Widget child, Animation<double> animation) {
                     final offsetAnimation = Tween<Offset>(
-                        begin: const Offset(0.0, 2.0),
-                        end: const Offset(0.0, 0.0))
+                            begin: const Offset(0.0, 2.0),
+                            end: const Offset(0.0, 0.0))
                         .animate(animation);
                     return ClipRect(
                         child: SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
-                        ));
+                      position: offsetAnimation,
+                      child: child,
+                    ));
                   },
                   child: _fieldVisible
-                  //container makes animation work lol
-                  // ignore: avoid_unnecessary_containers
+                      //container makes animation work lol
+                      // ignore: avoid_unnecessary_containers
                       ? Container(
-                    child: SizedBox(
-                      width: 250,
-                      height: 75,
-                      child: ElevatedButton(
-                          onPressed: showField,
-                          child: const Text("Join Poll",
-                              style: TextStyle(fontSize: 36))),
-                    ),
-                  )
+                          child: SizedBox(
+                            width: 250,
+                            height: 75,
+                            child: ElevatedButton(
+                                onPressed: showField,
+                                child: const Text("Join Poll",
+                                    style: TextStyle(fontSize: 36))),
+                          ),
+                        )
                       : SizedBox(
-                    width: 250,
-                    height: 75,
-                    child: TextField(
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 36),
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        hintText: 'Room Code',
-                        hintStyle: TextStyle(fontSize: 36),
-                      ),
-                      textCapitalization: TextCapitalization.characters,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      controller: codeFieldCont,
-                      onEditingComplete: () => codeSubmit(codeFieldCont),
-                    ),
-                  ),
+                          width: 250,
+                          height: 75,
+                          child: TextField(
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 36),
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              hintText: 'Room Code',
+                              hintStyle: TextStyle(fontSize: 36),
+                            ),
+                            textCapitalization: TextCapitalization.characters,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            controller: codeFieldCont,
+                            onEditingComplete: () => codeSubmit(codeFieldCont),
+                          ),
+                        ),
                 ),
               ),
             ])
@@ -155,7 +155,7 @@ void _wrongCodeDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Umm...'),
+        title: const Text('Error'),
         content: Text(errMsg),
         actions: <Widget>[
           TextButton(

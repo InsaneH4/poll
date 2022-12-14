@@ -1,6 +1,7 @@
 import 'main.dart';
 import 'homepage.dart';
 import 'package:flutter/material.dart';
+import 'package:restart_app/restart_app.dart';
 
 class HostPage extends StatefulWidget {
   const HostPage({super.key});
@@ -22,12 +23,6 @@ class _HostPageState extends State<HostPage> {
       channel.sink.add('hostShowAnswers?code=$roomCode');
     } else {
       channel.sink.add('hostNextQuestion?code=$roomCode');
-      if (currQ + 1 == questions.length) {
-        Navigator.push(
-          context,
-          goToHome,
-        );
-      }
     }
     setState(
       () {
@@ -130,8 +125,15 @@ class _HostPageState extends State<HostPage> {
                   Container(
                     margin: const EdgeInsets.all(50),
                     child: ElevatedButton(
-                      child: const Text("Next"),
-                      onPressed: () => resultsVis(false),
+                      child: Text(
+                          currQ + 1 == questions.length ? "End Poll" : "Next"),
+                      onPressed: () {
+                        if (currQ + 1 == questions.length) {
+                          Restart.restartApp();
+                        } else {
+                          resultsVis(false);
+                        }
+                      },
                     ),
                   ),
                 ],
