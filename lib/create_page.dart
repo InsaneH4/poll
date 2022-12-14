@@ -1,3 +1,5 @@
+import 'package:restart_app/restart_app.dart';
+
 import 'main.dart';
 import 'host_page.dart';
 import 'homepage.dart';
@@ -211,14 +213,14 @@ class _CreatePageState extends State<CreatePage> {
         Container(
           margin: const EdgeInsets.all(50),
           child: ElevatedButton(
-            onPressed: () => {
-              channel.sink.add('hostStartGame?code=$roomCode'),
+            onPressed: () {
+              channel.sink.add('hostStartGame?code=$roomCode');
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const HostPage(),
                 ),
-              )
+              );
             },
             child: const Text("Start"),
           ),
@@ -240,6 +242,7 @@ class _CreatePageState extends State<CreatePage> {
     void returnToHome() {
       channel.sink.add('endGame?code=$roomCode');
       host = false;
+      Restart.restartApp();
       Navigator.push(context, goToHome);
     }
 

@@ -1,5 +1,6 @@
 import 'homepage.dart';
 import 'create_page.dart';
+import 'answer_page.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -14,13 +15,14 @@ var user = false;
 var currQ = 0;
 List<PollObj> questions = [];
 ValueNotifier<List<int>> responses = ValueNotifier([0, 0, 0, 0]);
-ValueNotifier<String> serverQ = ValueNotifier("");
-final channel = WebSocketChannel.connect(
+ValueNotifier<String> serverStream = ValueNotifier("");
+var channel = WebSocketChannel.connect(
   Uri.parse("wss://robopoll-server.herokuapp.com"),
 );
-//TODO: notify user when poll starts
+//TODO: have options as button text for user
 StreamSubscription wsStream = channel.stream.listen((message) {
   streamStr = message;
+  serverStream.value = streamStr;
   if (streamStr.contains('userAnswered')) {
     var regex = RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1);
     responseNum.value = int.parse(regex!);
@@ -30,7 +32,7 @@ StreamSubscription wsStream = channel.stream.listen((message) {
         roomCode =
             RegExp(r'code=(.*)').firstMatch(streamStr)!.group(1) as String;
         host = true;
-      } else if(streamStr.contains('status=success')) {
+      } else if (streamStr.contains('status=success')) {
         user = true;
       }
     } else {
@@ -44,7 +46,8 @@ StreamSubscription wsStream = channel.stream.listen((message) {
         errMsg = "Something suspicious happened";
       }
     }
-  } else if (streamStr.contains('startStatus')) {
+  } else if (streamStr.contains('gameStart')) {
+    userStart();
     currQ = 0;
   } else if (streamStr.contains('answerStatus')) {
     responses.value = (jsonDecode(RegExp(r'results=(.*)')
@@ -55,10 +58,8 @@ StreamSubscription wsStream = channel.stream.listen((message) {
   } else if (streamStr.contains('userAnswered')) {
     responseNum.value = int.parse(
         RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1) as String);
-  } else if (streamStr.contains('newQuestion')) {
-    //serverQ.value = streamStr;
   } else if (streamStr.contains('goodbye')) {
-    //serverQ.value = "";
+    pollEnd(GlobalContextService.navigatorKey.currentContext);
   }
   print(streamStr);
   streamStr = "";
@@ -69,6 +70,10 @@ void main() {
   runApp(const MyApp());
 }
 
+class GlobalContextService {
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -76,6 +81,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'RoboPoll',
+      navigatorKey: GlobalContextService.navigatorKey,
       theme: ThemeData(
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

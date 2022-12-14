@@ -1,3 +1,4 @@
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'main.dart';
 import 'create_page.dart';
 import 'answer_page.dart';
@@ -35,10 +36,10 @@ class _HomepageState extends State<Homepage> {
   var _fieldVisible = true;
 
   Future<void> codeSubmit(var codeFieldCont) async {
-    roomCode = codeFieldCont.text;
+    roomCode = codeFieldCont.text.toUpperCase();
     if (codeFieldCont.text.isNotEmpty && codeFieldCont.text.length == 4) {
       channel.sink.add('userInit?code=$roomCode');
-      roomCode = "";
+      //roomCode = "";
       const loadBar = SnackBar(
         content: Text("Connecting..."),
         duration: Duration(seconds: 1),
@@ -171,7 +172,7 @@ void _wrongCodeDialog(BuildContext context) {
   );
 }
 
-void _tempDialog(BuildContext context) {
+/*void _tempDialog(BuildContext context) {
   showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -187,4 +188,4 @@ void _tempDialog(BuildContext context) {
       );
     },
   );
-}
+}*/

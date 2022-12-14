@@ -1,3 +1,4 @@
+import 'answer_page.dart';
 import 'main.dart';
 import 'homepage.dart';
 import 'package:flutter/material.dart';
@@ -41,9 +42,10 @@ class _HostPageState extends State<HostPage> {
         title: Text(widget.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => {
-            channel.sink.add('endGame?code=$roomCode'),
-            Navigator.push(context, goToHome)
+          onPressed: () {
+            channel.sink.add('endGame?code=$roomCode');
+            host = false;
+            Navigator.push(context, goToHome);
           },
         ),
       ),
@@ -129,7 +131,12 @@ class _HostPageState extends State<HostPage> {
                           currQ + 1 == questions.length ? "End Poll" : "Next"),
                       onPressed: () {
                         if (currQ + 1 == questions.length) {
+                          channel.sink.add('endGame?code=$roomCode');
+                          host = false;
+                          isStarted = false;
+                          roomCode = "";
                           Restart.restartApp();
+                          Navigator.push(context, goToHome);
                         } else {
                           resultsVis(false);
                         }
