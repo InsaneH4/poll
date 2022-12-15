@@ -1,8 +1,9 @@
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 import 'answer_page.dart';
 import 'main.dart';
 import 'homepage.dart';
 import 'package:flutter/material.dart';
-import 'package:restart_app/restart_app.dart';
 
 class HostPage extends StatefulWidget {
   const HostPage({super.key});
@@ -43,9 +44,7 @@ class _HostPageState extends State<HostPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            channel.sink.add('endGame?code=$roomCode');
-            host = false;
-            Navigator.push(context, goToHome);
+            hostEndPoll();
           },
         ),
       ),
@@ -131,12 +130,7 @@ class _HostPageState extends State<HostPage> {
                           currQ + 1 == questions.length ? "End Poll" : "Next"),
                       onPressed: () {
                         if (currQ + 1 == questions.length) {
-                          channel.sink.add('endGame?code=$roomCode');
-                          host = false;
-                          isStarted = false;
-                          roomCode = "";
-                          Restart.restartApp();
-                          Navigator.push(context, goToHome);
+                          hostEndPoll();
                         } else {
                           resultsVis(false);
                         }
@@ -150,5 +144,26 @@ class _HostPageState extends State<HostPage> {
         ),
       ),
     );
+  }
+
+  void reconnectWs() {
+    flushWsStream();
+    setState(() {
+      channel = WebSocketChannel.connect(
+          Uri.parse("wss://robopoll-server.herokuapp.com"));
+      channel.stream.listen((message) => listenMethod(message));
+    });
+  }
+
+  void hostEndPoll(){
+    channel.sink.add('endGame?code=$roomCode');
+    reconnectWs();
+    Navigator.push(context, goToHome);
+    responseNum.value = 0;
+    responses.value = [0, 0, 0, 0];
+    currQ = 0;
+    host = false;
+    isStarted = false;
+    flushWsStream();
   }
 }

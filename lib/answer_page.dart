@@ -1,4 +1,4 @@
-import 'package:restart_app/restart_app.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'main.dart';
 import 'homepage.dart';
@@ -24,14 +24,7 @@ class _AnswerPageState extends State<AnswerPage> {
         title: Text(widget.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            user = false;
-            isStarted = false;
-            channel.sink.add('leaveGame?code=$roomCode');
-            roomCode = "";
-            Navigator.push(context, goToHome);
-            Restart.restartApp();
-          },
+          onPressed: () => leavePollUsr(context),
         ),
       ),
       body: Center(
@@ -159,8 +152,6 @@ void userStart() {
 
 void pollEnd(context) {
   flushWsStream();
-  roomCode = "";
-  user = false;
   showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -168,11 +159,23 @@ void pollEnd(context) {
         title: const Text('The poll has ended'),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Restart.restartApp(),
+            onPressed: () => leavePollUsr(context),
             child: const Text('OK'),
           ),
         ],
       );
     },
   );
+}
+
+void leavePollUsr(context) {
+  user = false;
+  isStarted = false;
+  channel.sink.add('leaveGame?code=$roomCode');
+  roomCode = "";
+  flushWsStream();
+  channel = WebSocketChannel.connect(
+      Uri.parse("wss://robopoll-server.herokuapp.com"));
+  //restart?
+  Navigator.push(context, goToHome);
 }

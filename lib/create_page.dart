@@ -1,4 +1,4 @@
-import 'package:restart_app/restart_app.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'main.dart';
 import 'host_page.dart';
@@ -35,6 +35,7 @@ class DynamicWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    questions = [];
     return Container(
       margin: const EdgeInsets.fromLTRB(0, 10, 0, 10), //haha
       child: Column(
@@ -115,16 +116,18 @@ class DynamicWidget extends StatelessWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
-  final _showButton = true;
+  var _showButton = true;
   List<DynamicWidget> dynamicList = [];
 
-  void _emptyQuestionsDialog(BuildContext context) {
+  void _emptyQuestionsDialog(BuildContext context, int type) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Umm...'),
-          content: const Text("You didn't add any questions"),
+          content: Text(type == 0
+              ? "You didn't add any questions"
+              : "You have incomplete questions"),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, 'OK'),
@@ -147,6 +150,8 @@ class _CreatePageState extends State<CreatePage> {
   PollObj pollObject = PollObj(question: "", options: []);
 
   void submitData() {
+    _showButton = false;
+    var found = false;
     for (var widget in dynamicList) {
       pollObject = PollObj(question: "", options: []);
       if (widget.question.text.isNotEmpty &&
@@ -160,10 +165,13 @@ class _CreatePageState extends State<CreatePage> {
         pollObject.options.add(widget.choice3.text);
         pollObject.options.add(widget.choice4.text);
         questions.add(pollObject);
+      } else {
+        found = true;
+        _emptyQuestionsDialog(context, 1);
       }
     }
-    if (questions.isEmpty) {
-      _emptyQuestionsDialog(context);
+    if (questions.isEmpty && !found) {
+      _emptyQuestionsDialog(context, 0);
     } else {
       for (var question in questions) {
         channel.sink.add(
@@ -217,9 +225,7 @@ class _CreatePageState extends State<CreatePage> {
               channel.sink.add('hostStartGame?code=$roomCode');
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const HostPage(),
-                ),
+                MaterialPageRoute(builder: (context) => const HostPage()),
               );
             },
             child: const Text("Start"),
@@ -241,8 +247,14 @@ class _CreatePageState extends State<CreatePage> {
     var goToHome = MaterialPageRoute(builder: (context) => const Homepage());
     void returnToHome() {
       channel.sink.add('endGame?code=$roomCode');
+      reconnectWs();
+      currQ = 0;
+      questions.clear();
+      responseNum.value = 0;
+      responses.value = [0, 0, 0, 0];
       host = false;
-      Restart.restartApp();
+      //Restart.restartApp();
+      flushWsStream();
       Navigator.push(context, goToHome);
     }
 
@@ -251,7 +263,7 @@ class _CreatePageState extends State<CreatePage> {
         title: Text(widget.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => returnToHome(),
+          onPressed: returnToHome,
         ),
       ),
       body: Column(children: <Widget>[
@@ -265,5 +277,14 @@ class _CreatePageState extends State<CreatePage> {
             )
           : null,
     );
+  }
+
+  void reconnectWs() {
+    flushWsStream();
+    setState(() {
+      channel = WebSocketChannel.connect(
+          Uri.parse("wss://robopoll-server.herokuapp.com"));
+      channel.stream.listen((message) => listenMethod(message));
+    });
   }
 }

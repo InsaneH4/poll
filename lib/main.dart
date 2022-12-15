@@ -20,50 +20,8 @@ var channel = WebSocketChannel.connect(
   Uri.parse("wss://robopoll-server.herokuapp.com"),
 );
 //TODO: have options as button text for user
-StreamSubscription wsStream = channel.stream.listen((message) {
-  streamStr = message;
-  serverStream.value = streamStr;
-  if (streamStr.contains('userAnswered')) {
-    var regex = RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1);
-    responseNum.value = int.parse(regex!);
-  } else if (streamStr.contains('initStatus')) {
-    if (!streamStr.contains('error')) {
-      if (streamStr.contains('code')) {
-        roomCode =
-            RegExp(r'code=(.*)').firstMatch(streamStr)!.group(1) as String;
-        host = true;
-      } else if (streamStr.contains('status=success')) {
-        user = true;
-      }
-    } else {
-      if (streamStr.contains("codeNotFound")) {
-        errMsg = "Invalid code";
-      } else if (streamStr.contains("alreadyInGame")) {
-        errMsg = "You are already in a poll!";
-      } else if (streamStr.contains("gameAlreadyStarted")) {
-        errMsg = "The poll has already started.";
-      } else {
-        errMsg = "Something suspicious happened";
-      }
-    }
-  } else if (streamStr.contains('gameStart')) {
-    userStart();
-    currQ = 0;
-  } else if (streamStr.contains('answerStatus')) {
-    responses.value = (jsonDecode(RegExp(r'results=(.*)')
-            .firstMatch(streamStr)!
-            .group(1) as String) as List)
-        .map((i) => int.parse(i.toString()))
-        .toList();
-  } else if (streamStr.contains('userAnswered')) {
-    responseNum.value = int.parse(
-        RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1) as String);
-  } else if (streamStr.contains('goodbye')) {
-    pollEnd(GlobalContextService.navigatorKey.currentContext);
-  }
-  print(streamStr);
-  flushWsStream();
-});
+StreamSubscription wsStream =
+    channel.stream.listen((message) => listenMethod(message));
 
 void main() {
   wsStream.resume();
@@ -100,4 +58,48 @@ class MyApp extends StatelessWidget {
 
 void flushWsStream() {
   streamStr = "";
+}
+
+void listenMethod(message) {
+  streamStr = message;
+  serverStream.value = streamStr;
+  if (streamStr.contains('userAnswered')) {
+    var regex = RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1);
+    responseNum.value = int.parse(regex!);
+  } else if (streamStr.contains('initStatus')) {
+    if (!streamStr.contains('error')) {
+      if (streamStr.contains('code')) {
+        roomCode =
+            RegExp(r'code=(.*)').firstMatch(streamStr)!.group(1) as String;
+      } else if (streamStr.contains('status=success')) {
+        user = true;
+      }
+    } else {
+      if (streamStr.contains("codeNotFound")) {
+        errMsg = "Invalid code";
+      } else if (streamStr.contains("alreadyInGame")) {
+        errMsg = "You are already in a poll!";
+      } else if (streamStr.contains("gameAlreadyStarted")) {
+        errMsg = "The poll has already started.";
+      } else {
+        errMsg = "Something suspicious happened";
+      }
+    }
+  } else if (streamStr.contains('gameStart')) {
+    userStart();
+    currQ = 0;
+  } else if (streamStr.contains('answerStatus')) {
+    responses.value = (jsonDecode(RegExp(r'results=(.*)')
+            .firstMatch(streamStr)!
+            .group(1) as String) as List)
+        .map((i) => int.parse(i.toString()))
+        .toList();
+  } else if (streamStr.contains('userAnswered')) {
+    responseNum.value = int.parse(
+        RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1) as String);
+  } else if (streamStr.contains('goodbye') && user) {
+    pollEnd(GlobalContextService.navigatorKey.currentContext);
+  }
+  print(streamStr);
+  flushWsStream();
 }

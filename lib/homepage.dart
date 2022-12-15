@@ -1,4 +1,3 @@
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'main.dart';
 import 'create_page.dart';
 import 'answer_page.dart';
@@ -39,13 +38,12 @@ class _HomepageState extends State<Homepage> {
     roomCode = codeFieldCont.text.toUpperCase();
     if (codeFieldCont.text.isNotEmpty && codeFieldCont.text.length == 4) {
       channel.sink.add('userInit?code=$roomCode');
-      //roomCode = "";
       const loadBar = SnackBar(
         content: Text("Connecting..."),
-        duration: Duration(seconds: 1),
+        duration: Duration(seconds: 2),
       );
       ScaffoldMessenger.of(context).showSnackBar(loadBar);
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
       if (user) {
         // ignore: use_build_context_synchronously
         Navigator.push(
@@ -155,6 +153,7 @@ class _HomepageState extends State<Homepage> {
 }
 
 void _wrongCodeDialog(BuildContext context) {
+  user = false;
   showDialog(
     context: context,
     builder: (BuildContext context) {
