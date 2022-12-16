@@ -171,6 +171,10 @@ void _wrongCodeDialog(BuildContext context) {
   );
 }
 
+void function(){
+
+}
+
 /*void _tempDialog(BuildContext context) {
   showDialog<void>(
     context: context,

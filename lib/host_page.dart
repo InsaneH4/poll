@@ -149,13 +149,12 @@ class _HostPageState extends State<HostPage> {
   void reconnectWs() {
     flushWsStream();
     setState(() {
-      channel = WebSocketChannel.connect(
-          Uri.parse("wss://robopoll-server.herokuapp.com"));
+      channel = WebSocketChannel.connect(endpoint);
       channel.stream.listen((message) => listenMethod(message));
     });
   }
 
-  void hostEndPoll(){
+  void hostEndPoll() {
     channel.sink.add('endGame?code=$roomCode');
     reconnectWs();
     Navigator.push(context, goToHome);

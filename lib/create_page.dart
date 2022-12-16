@@ -282,8 +282,7 @@ class _CreatePageState extends State<CreatePage> {
   void reconnectWs() {
     flushWsStream();
     setState(() {
-      channel = WebSocketChannel.connect(
-          Uri.parse("wss://robopoll-server.herokuapp.com"));
+      channel = WebSocketChannel.connect(endpoint);
       channel.stream.listen((message) => listenMethod(message));
     });
   }

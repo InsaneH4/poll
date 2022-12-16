@@ -8,17 +8,17 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 String streamStr = "";
 String roomCode = "";
-String errMsg = "Unknown";
+String errMsg = "Not connected to server";
 ValueNotifier<int> responseNum = ValueNotifier(0);
+ValueNotifier<bool> pollOver = ValueNotifier(false);
 var host = false;
 var user = false;
 var currQ = 0;
 List<PollObj> questions = [];
 ValueNotifier<List<int>> responses = ValueNotifier([0, 0, 0, 0]);
 ValueNotifier<String> serverStream = ValueNotifier("");
-var channel = WebSocketChannel.connect(
-  Uri.parse("wss://robopoll-server.herokuapp.com"),
-);
+var endpoint = Uri.parse("wss://robopoll-server.herokuapp.com");
+var channel = WebSocketChannel.connect(endpoint);
 //TODO: have options as button text for user
 StreamSubscription wsStream =
     channel.stream.listen((message) => listenMethod(message));
@@ -63,6 +63,7 @@ void flushWsStream() {
 void listenMethod(message) {
   streamStr = message;
   serverStream.value = streamStr;
+  print(streamStr);
   if (streamStr.contains('userAnswered')) {
     var regex = RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1);
     responseNum.value = int.parse(regex!);
@@ -98,8 +99,8 @@ void listenMethod(message) {
     responseNum.value = int.parse(
         RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1) as String);
   } else if (streamStr.contains('goodbye') && user) {
-    pollEnd(GlobalContextService.navigatorKey.currentContext);
+    pollOver.value = true;
+    //leavePollUsr(GlobalContextService.navigatorKey.currentContext);
   }
-  print(streamStr);
   flushWsStream();
 }
