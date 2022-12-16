@@ -125,7 +125,9 @@ class _AnswerPageState extends State<AnswerPage> {
                           Container(
                             margin: const EdgeInsets.only(top: 50),
                             child: Text(
-                                style: const TextStyle(fontSize: 48), question),
+                                style: const TextStyle(fontSize: 48),
+                                textAlign: TextAlign.center,
+                                question),
                           ),
                         ],
                       );

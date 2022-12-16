@@ -116,8 +116,9 @@ class DynamicWidget extends StatelessWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
-  var _showButton = true;
+  var showButton = true;
   List<DynamicWidget> dynamicList = [];
+  PollObj pollObject = PollObj(question: "", options: []);
 
   void _emptyQuestionsDialog(BuildContext context, int type) {
     showDialog(
@@ -147,10 +148,7 @@ class _CreatePageState extends State<CreatePage> {
     dynamicList.add(DynamicWidget());
   }
 
-  PollObj pollObject = PollObj(question: "", options: []);
-
   void submitData() {
-    _showButton = false;
     var found = false;
     for (var widget in dynamicList) {
       pollObject = PollObj(question: "", options: []);
@@ -173,6 +171,9 @@ class _CreatePageState extends State<CreatePage> {
     if (questions.isEmpty && !found) {
       _emptyQuestionsDialog(context, 0);
     } else {
+      if (!found) {
+        showButton = false;
+      }
       for (var question in questions) {
         channel.sink.add(
             'hostSaveQuestion?code=$roomCode&question=${question.question}&options=${question.options[0]}&options=${question.options[1]}&options=${question.options[2]}&options=${question.options[3]}');
@@ -270,7 +271,7 @@ class _CreatePageState extends State<CreatePage> {
         pollObject.question.isEmpty ? dynamicTextField : startGame,
         pollObject.question.isEmpty ? submitButton : Container(),
       ]),
-      floatingActionButton: _showButton
+      floatingActionButton: showButton
           ? FloatingActionButton(
               onPressed: _addDynamic,
               child: const Icon(Icons.add),

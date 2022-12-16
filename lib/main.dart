@@ -19,7 +19,7 @@ ValueNotifier<List<int>> responses = ValueNotifier([0, 0, 0, 0]);
 ValueNotifier<String> serverStream = ValueNotifier("");
 var endpoint = Uri.parse("wss://robopoll-server.herokuapp.com");
 var channel = WebSocketChannel.connect(endpoint);
-//TODO: have options as button text for user
+//TODO: fix host disconnecting, fix response num variables, fix options as button text for user
 StreamSubscription wsStream =
     channel.stream.listen((message) => listenMethod(message));
 
