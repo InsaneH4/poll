@@ -1,6 +1,4 @@
 import 'package:web_socket_channel/web_socket_channel.dart';
-
-import 'answer_page.dart';
 import 'main.dart';
 import 'homepage.dart';
 import 'package:flutter/material.dart';
@@ -53,20 +51,43 @@ class _HostPageState extends State<HostPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Text(questions[currQ].question,
-                style: const TextStyle(fontSize: 48)),
-            Text(questions[currQ].options[0],
-                style: const TextStyle(fontSize: 24, color: Colors.red)),
-            Text(questions[currQ].options[1],
-                style: const TextStyle(fontSize: 24, color: Colors.blue)),
-            Text(questions[currQ].options[2],
-                style: const TextStyle(fontSize: 24, color: Colors.amber)),
-            Text(questions[currQ].options[3],
-                style: const TextStyle(fontSize: 24, color: Colors.green)),
+                style: Theme.of(context).textTheme.headline2),
+            Visibility(
+              visible: !resultsVisible,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Text(questions[currQ].options[0],
+                        style:
+                            const TextStyle(fontSize: 36, color: Colors.red)),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Text(questions[currQ].options[1],
+                        style:
+                            const TextStyle(fontSize: 36, color: Colors.blue)),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Text(questions[currQ].options[2],
+                        style:
+                            const TextStyle(fontSize: 36, color: Colors.amber)),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Text(questions[currQ].options[3],
+                        style:
+                            const TextStyle(fontSize: 36, color: Colors.green)),
+                  ),
+                ],
+              ),
+            ),
             ValueListenableBuilder(
                 valueListenable: responseNum,
                 builder: ((context, value, child) {
-                  return Text("$value responses",
-                      style: const TextStyle(fontSize: 28));
+                  return Text("$value total responses",
+                      style: Theme.of(context).textTheme.headline3);
                 })),
             Visibility(
               visible: !resultsVisible,
@@ -96,27 +117,31 @@ class _HostPageState extends State<HostPage> {
                               margin: const EdgeInsets.only(top: 10),
                               child: Text(
                                 "${questions[currQ].options[0]}: ${responses.value[0]} responses",
-                                style: const TextStyle(fontSize: 24),
+                                style: const TextStyle(
+                                    fontSize: 36, color: Colors.red),
                               )),
                           Container(
                             margin: const EdgeInsets.only(top: 10),
                             child: Text(
                               "${questions[currQ].options[1]}: ${responses.value[1]} responses",
-                              style: const TextStyle(fontSize: 24),
+                              style: const TextStyle(
+                                  fontSize: 36, color: Colors.blue),
                             ),
                           ),
                           Container(
                             margin: const EdgeInsets.only(top: 10),
                             child: Text(
                               "${questions[currQ].options[2]}: ${responses.value[2]} responses",
-                              style: const TextStyle(fontSize: 24),
+                              style: const TextStyle(
+                                  fontSize: 36, color: Colors.amber),
                             ),
                           ),
                           Container(
                             margin: const EdgeInsets.only(top: 10),
                             child: Text(
                               "${questions[currQ].options[3]}: ${responses.value[3]} responses",
-                              style: const TextStyle(fontSize: 24),
+                              style: const TextStyle(
+                                  fontSize: 36, color: Colors.green),
                             ),
                           ),
                         ],
@@ -133,6 +158,8 @@ class _HostPageState extends State<HostPage> {
                           hostEndPoll();
                         } else {
                           resultsVis(false);
+                          responseNum.value = 0;
+                          responses.value = [0, 0, 0, 0];
                         }
                       },
                     ),
@@ -157,12 +184,11 @@ class _HostPageState extends State<HostPage> {
   void hostEndPoll() {
     channel.sink.add('endGame?code=$roomCode');
     reconnectWs();
-    Navigator.push(context, goToHome);
+    currQ = 0;
     responseNum.value = 0;
     responses.value = [0, 0, 0, 0];
-    currQ = 0;
     host = false;
-    isStarted = false;
     flushWsStream();
+    Navigator.push(context, goToHome);
   }
 }

@@ -47,9 +47,11 @@ class DynamicWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   child: TextField(
                     controller: question,
-                    decoration: const InputDecoration(
+                    style: Theme.of(context).textTheme.headline6,
+                    decoration: InputDecoration(
                       labelText: 'Question',
-                      border: OutlineInputBorder(),
+                      labelStyle: Theme.of(context).textTheme.headline6,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -63,9 +65,11 @@ class DynamicWidget extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
                       controller: choice1,
-                      decoration: const InputDecoration(
+                      style: Theme.of(context).textTheme.headline6,
+                      decoration: InputDecoration(
                         labelText: 'Answer',
-                        border: OutlineInputBorder(),
+                        labelStyle: Theme.of(context).textTheme.headline6,
+                        border: const OutlineInputBorder(),
                       )),
                 ),
               ),
@@ -74,9 +78,11 @@ class DynamicWidget extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
                     controller: choice2,
-                    decoration: const InputDecoration(
+                    style: Theme.of(context).textTheme.headline6,
+                    decoration: InputDecoration(
                       labelText: 'Answer',
-                      border: OutlineInputBorder(),
+                      labelStyle: Theme.of(context).textTheme.headline6,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -89,9 +95,11 @@ class DynamicWidget extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
                   controller: choice3,
-                  decoration: const InputDecoration(
+                  style: Theme.of(context).textTheme.headline6,
+                  decoration: InputDecoration(
                     labelText: 'Answer',
-                    border: OutlineInputBorder(),
+                    labelStyle: Theme.of(context).textTheme.headline6,
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ),
@@ -101,9 +109,11 @@ class DynamicWidget extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
                   controller: choice4,
-                  decoration: const InputDecoration(
+                  style: Theme.of(context).textTheme.headline6,
+                  decoration: InputDecoration(
                     labelText: 'Answer',
-                    border: OutlineInputBorder(),
+                    labelStyle: Theme.of(context).textTheme.headline6,
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ),
@@ -125,12 +135,20 @@ class _CreatePageState extends State<CreatePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Umm...'),
-          content: Text(type == 0
-              ? "You didn't add any questions"
-              : "You have incomplete questions"),
+          backgroundColor: Colors.grey[850],
+          title: Text('Umm...', style: Theme.of(context).textTheme.headline4),
+          content: Text(
+            type == 0
+                ? "You didn't add any questions"
+                : "You have incomplete questions",
+            style: Theme.of(context).textTheme.headline6,
+          ),
           actions: <Widget>[
             TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.headline6,
+                foregroundColor: gold,
+              ),
               onPressed: () => Navigator.pop(context, 'OK'),
               child: const Text('OK'),
             ),
@@ -150,6 +168,7 @@ class _CreatePageState extends State<CreatePage> {
 
   void submitData() {
     var found = false;
+    questions.clear();
     for (var widget in dynamicList) {
       pollObject = PollObj(question: "", options: []);
       if (widget.question.text.isNotEmpty &&
@@ -213,12 +232,12 @@ class _CreatePageState extends State<CreatePage> {
       children: <Widget>[
         Container(
           margin: const EdgeInsets.all(25),
-          child: const Text(
+          child: Text(
             "Room code:",
-            style: TextStyle(fontSize: 42),
+            style: Theme.of(context).textTheme.headline2,
           ),
         ),
-        Text(roomCode, style: const TextStyle(fontSize: 72)),
+        Text(roomCode, style: Theme.of(context).textTheme.headline1),
         Container(
           margin: const EdgeInsets.all(50),
           child: ElevatedButton(
@@ -241,7 +260,7 @@ class _CreatePageState extends State<CreatePage> {
         onPressed: submitData,
         child: const Text(
           'Submit',
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -254,7 +273,6 @@ class _CreatePageState extends State<CreatePage> {
       responseNum.value = 0;
       responses.value = [0, 0, 0, 0];
       host = false;
-      //Restart.restartApp();
       flushWsStream();
       Navigator.push(context, goToHome);
     }
@@ -273,6 +291,7 @@ class _CreatePageState extends State<CreatePage> {
       ]),
       floatingActionButton: showButton
           ? FloatingActionButton(
+              foregroundColor: Colors.black,
               onPressed: _addDynamic,
               child: const Icon(Icons.add),
             )

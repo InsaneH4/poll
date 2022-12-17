@@ -1,3 +1,5 @@
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 import 'main.dart';
 import 'create_page.dart';
 import 'answer_page.dart';
@@ -21,7 +23,16 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
+  void reconnectWs() {
+    flushWsStream();
+    setState(() {
+      channel = WebSocketChannel.connect(endpoint);
+      channel.stream.listen((message) => listenMethod(message));
+    });
+  }
+
   void hostStart() {
+    reconnectWs();
     host = true;
     channel.sink.add("hostInit");
     Navigator.push(
@@ -34,10 +45,15 @@ class _HomepageState extends State<Homepage> {
 
   var _fieldVisible = true;
 
-  Future<void> codeSubmit(var codeFieldCont) async {
+  void codeSubmit(var codeFieldCont) async {
+    flushWsStream();
     roomCode = codeFieldCont.text.toUpperCase();
-    if (codeFieldCont.text.isNotEmpty && codeFieldCont.text.length == 4) {
-      channel.sink.add('userInit?code=$roomCode');
+    setState(() {
+      channel = WebSocketChannel.connect(endpoint);
+      channel.stream.listen((message) => listenMethod(message));
+    });
+    channel.sink.add('userInit?code=$roomCode');
+    if (roomCode.isNotEmpty && roomCode.length == 4) {
       const loadBar = SnackBar(
         content: Text("Connecting..."),
         duration: Duration(seconds: 2),
@@ -76,12 +92,9 @@ class _HomepageState extends State<Homepage> {
           children: <Widget>[
             Container(
               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: const Text(
+              child: Text(
                 'Welcome to RoboPoll!',
-                style: TextStyle(
-                  fontSize: 44,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headline2,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -90,9 +103,12 @@ class _HomepageState extends State<Homepage> {
                 width: 250,
                 height: 75,
                 child: ElevatedButton(
-                    onPressed: () => hostStart(),
-                    child: const Text("Create Poll",
-                        style: TextStyle(fontSize: 36))),
+                  onPressed: () => hostStart(),
+                  child: const Text(
+                    "Create Poll",
+                    style: TextStyle(fontSize: 36),
+                  ),
+                ),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 50),
@@ -118,9 +134,10 @@ class _HomepageState extends State<Homepage> {
                             width: 250,
                             height: 75,
                             child: ElevatedButton(
-                                onPressed: showField,
-                                child: const Text("Join Poll",
-                                    style: TextStyle(fontSize: 36))),
+                              onPressed: showField,
+                              child: const Text("Join Poll",
+                                  style: TextStyle(fontSize: 36)),
+                            ),
                           ),
                         )
                       : SizedBox(
@@ -129,11 +146,22 @@ class _HomepageState extends State<Homepage> {
                           child: TextField(
                             maxLines: 1,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 36),
+                            style: Theme.of(context).textTheme.headline3,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: gold,
+                                ),
+                              ),
                               hintText: 'Room Code',
-                              hintStyle: TextStyle(fontSize: 36),
+                              hintStyle:
+                                  TextStyle(fontSize: 36, color: Colors.grey),
                             ),
                             textCapitalization: TextCapitalization.characters,
                             autocorrect: false,
@@ -158,10 +186,18 @@ void _wrongCodeDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Error'),
-        content: Text(errMsg),
+        backgroundColor: Colors.grey[850],
+        title: Text(
+          'Error',
+          style: Theme.of(context).textTheme.headline4,
+        ),
+        content: Text(errMsg, style: Theme.of(context).textTheme.headline6),
         actions: <Widget>[
           TextButton(
+            style: TextButton.styleFrom(
+              textStyle: Theme.of(context).textTheme.headline6,
+              foregroundColor: gold,
+            ),
             onPressed: () => Navigator.pop(context, 'OK'),
             child: const Text('OK'),
           ),
@@ -171,11 +207,7 @@ void _wrongCodeDialog(BuildContext context) {
   );
 }
 
-void function(){
-
-}
-
-/*void _tempDialog(BuildContext context) {
+/*void tempDialog(BuildContext context) {
   showDialog<void>(
     context: context,
     builder: (BuildContext context) {

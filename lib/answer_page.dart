@@ -20,6 +20,7 @@ class _AnswerPageState extends State<AnswerPage> {
 
   @override
   Widget build(BuildContext context) {
+    var options = List<String>.filled(4, "loading...");
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -46,47 +47,19 @@ class _AnswerPageState extends State<AnswerPage> {
                         question = RegExp(r':"(.*?)"')
                             .firstMatch(value)
                             ?.group(1) as String;
+                        options = (RegExp(r'\[(.*?)\]')
+                                .firstMatch(value)
+                                ?.group(1) as String)
+                            .replaceAll('"', '')
+                            .split(',');
+                      } else {
+                        options = List<String>.filled(4, "...");
                       }
-                      return Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              SizedBox(
-                                width: 175,
-                                height: 175,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.red,
-                                    textStyle: const TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onPressed: () => _answerSubmit("0"),
-                                  child: Text("Temp 1"),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 175,
-                                height: 175,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.blue,
-                                    textStyle: const TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onPressed: () => _answerSubmit("1"),
-                                  child: Text("temp 2"),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 25),
-                            child: Row(
+                      return Container(
+                        margin: const EdgeInsets.only(top: 50),
+                        child: Column(
+                          children: <Widget>[
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: <Widget>[
                                 SizedBox(
@@ -95,13 +68,13 @@ class _AnswerPageState extends State<AnswerPage> {
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
-                                      backgroundColor: Colors.amber,
+                                      backgroundColor: Colors.red,
                                       textStyle: const TextStyle(
                                           fontSize: 28,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    onPressed: () => _answerSubmit("2"),
-                                    child: Text("Temp 3"),
+                                    onPressed: () => _answerSubmit("0"),
+                                    child: Text(options[0]),
                                   ),
                                 ),
                                 SizedBox(
@@ -110,42 +83,79 @@ class _AnswerPageState extends State<AnswerPage> {
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
-                                      backgroundColor: Colors.green,
+                                      backgroundColor: Colors.blue,
                                       textStyle: const TextStyle(
                                           fontSize: 28,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    onPressed: () => _answerSubmit("3"),
-                                    child: Text("Temp 4"),
+                                    onPressed: () => _answerSubmit("1"),
+                                    child: Text(options[1]),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 50),
-                            child: Text(
-                                style: const TextStyle(fontSize: 48),
-                                textAlign: TextAlign.center,
-                                question),
-                          ),
-                        ],
+                            Container(
+                              margin: const EdgeInsets.only(top: 25),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: 175,
+                                    height: 175,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: Colors.amber,
+                                        textStyle: const TextStyle(
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      onPressed: () => _answerSubmit("2"),
+                                      child: Text(options[2]),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 175,
+                                    height: 175,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: Colors.green,
+                                        textStyle: const TextStyle(
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      onPressed: () => _answerSubmit("3"),
+                                      child: Text(options[3]),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(top: 75),
+                              child: Text(
+                                  style: const TextStyle(
+                                      fontSize: 48, color: Colors.white),
+                                  textAlign: TextAlign.center,
+                                  question),
+                            ),
+                          ],
+                        ),
                       );
-                    } else if (!isStarted) {
+                    } else if (!isStarted && !pollOverVal) {
                       return Text(
                         waiting,
-                        style: TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headline2,
                         textAlign: TextAlign.center,
                       );
                     } else if (pollOverVal) {
                       return Column(
                         children: <Widget>[
-                          const Text(
+                          Text(
                             "Poll has ended",
-                            style: TextStyle(fontSize: 48),
+                            style: Theme.of(context).textTheme.headline2,
                           ),
                           Container(
                             margin: const EdgeInsets.only(top: 50),
@@ -159,12 +169,9 @@ class _AnswerPageState extends State<AnswerPage> {
                         ],
                       );
                     } else {
-                      return const Text(
+                      return Text(
                         'Something went wrong',
-                        style: TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headline2,
                         textAlign: TextAlign.center,
                       );
                     }
@@ -179,7 +186,6 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   void reconnectWs() {
-    flushWsStream();
     setState(() {
       channel = WebSocketChannel.connect(endpoint);
       channel.stream.listen((message) => listenMethod(message));
@@ -187,16 +193,17 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   void leavePollUsr(context) {
-    waiting = "";
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const Homepage()));
     channel.sink.add('leaveGame?code=$roomCode');
-    reconnectWs();
+    flushWsStream();
     user = false;
+    host = false;
     isStarted = false;
     pollOver.value = false;
     roomCode = "";
-    flushWsStream();
+    waiting = "";
+    reconnectWs();
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const Homepage()));
   }
 }
 
@@ -205,7 +212,7 @@ void _answerSubmit(String choice) {
 }
 
 void userStart() {
-  if (user) {
+  if (user && !host) {
     isStarted = true;
   }
   flushWsStream();
