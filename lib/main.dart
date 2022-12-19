@@ -23,7 +23,7 @@ var endpoint = Uri.parse("wss://robopoll-server.herokuapp.com");
 var channel = WebSocketChannel.connect(endpoint);
 StreamSubscription wsStream =
     channel.stream.listen((message) => listenMethod(message));
-//TODO: Deploy app!
+//TODO: Deploy app on iOS and publish on google play/app store
 void main() {
   wsStream.resume();
   Timer.periodic(const Duration(seconds: 45), (timer) {
