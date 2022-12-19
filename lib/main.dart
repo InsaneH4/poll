@@ -55,14 +55,14 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Colors.grey[900],
         textTheme: const TextTheme(
-          headline1: TextStyle(
+          displayLarge: TextStyle(
               fontSize: 72, fontWeight: FontWeight.bold, color: white),
-          headline2: TextStyle(
+          displayMedium: TextStyle(
               fontSize: 48, fontWeight: FontWeight.bold, color: white),
-          headline3: TextStyle(fontSize: 36, color: white),
-          headline4: TextStyle(fontSize: 28, color: white),
-          headline5: TextStyle(fontSize: 24, color: white),
-          headline6: TextStyle(fontSize: 18, color: white),
+          displaySmall: TextStyle(fontSize: 36, color: white),
+          headlineMedium: TextStyle(fontSize: 28, color: white),
+          headlineSmall: TextStyle(fontSize: 24, color: white),
+          titleLarge: TextStyle(fontSize: 18, color: white),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

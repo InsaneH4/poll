@@ -47,10 +47,10 @@ class DynamicWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   child: TextField(
                     controller: question,
-                    style: Theme.of(context).textTheme.headline6,
+                    style: Theme.of(context).textTheme.titleLarge,
                     decoration: InputDecoration(
                       labelText: 'Question',
-                      labelStyle: Theme.of(context).textTheme.headline6,
+                      labelStyle: Theme.of(context).textTheme.titleLarge,
                       border: const OutlineInputBorder(),
                     ),
                   ),
@@ -65,10 +65,10 @@ class DynamicWidget extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
                       controller: choice1,
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                       decoration: InputDecoration(
                         labelText: 'Answer',
-                        labelStyle: Theme.of(context).textTheme.headline6,
+                        labelStyle: Theme.of(context).textTheme.titleLarge,
                         border: const OutlineInputBorder(),
                       )),
                 ),
@@ -78,10 +78,10 @@ class DynamicWidget extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
                     controller: choice2,
-                    style: Theme.of(context).textTheme.headline6,
+                    style: Theme.of(context).textTheme.titleLarge,
                     decoration: InputDecoration(
                       labelText: 'Answer',
-                      labelStyle: Theme.of(context).textTheme.headline6,
+                      labelStyle: Theme.of(context).textTheme.titleLarge,
                       border: const OutlineInputBorder(),
                     ),
                   ),
@@ -95,10 +95,10 @@ class DynamicWidget extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
                   controller: choice3,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                   decoration: InputDecoration(
                     labelText: 'Answer',
-                    labelStyle: Theme.of(context).textTheme.headline6,
+                    labelStyle: Theme.of(context).textTheme.titleLarge,
                     border: const OutlineInputBorder(),
                   ),
                 ),
@@ -109,10 +109,10 @@ class DynamicWidget extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
                   controller: choice4,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                   decoration: InputDecoration(
                     labelText: 'Answer',
-                    labelStyle: Theme.of(context).textTheme.headline6,
+                    labelStyle: Theme.of(context).textTheme.titleLarge,
                     border: const OutlineInputBorder(),
                   ),
                 ),
@@ -136,17 +136,17 @@ class _CreatePageState extends State<CreatePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.grey[850],
-          title: Text('Umm...', style: Theme.of(context).textTheme.headline4),
+          title: Text('Umm...', style: Theme.of(context).textTheme.headlineMedium),
           content: Text(
             type == 0
                 ? "You didn't add any questions"
                 : "You have incomplete questions",
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.headline6,
+                textStyle: Theme.of(context).textTheme.titleLarge,
                 foregroundColor: gold,
               ),
               onPressed: () => Navigator.pop(context, 'OK'),
@@ -234,10 +234,10 @@ class _CreatePageState extends State<CreatePage> {
           margin: const EdgeInsets.all(25),
           child: Text(
             "Room code:",
-            style: Theme.of(context).textTheme.headline2,
+            style: Theme.of(context).textTheme.displayMedium,
           ),
         ),
-        Text(roomCode, style: Theme.of(context).textTheme.headline1),
+        Text(roomCode, style: Theme.of(context).textTheme.displayLarge),
         Container(
           margin: const EdgeInsets.all(50),
           child: ElevatedButton(

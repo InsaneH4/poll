@@ -147,7 +147,7 @@ class _AnswerPageState extends State<AnswerPage> {
                     } else if (!isStarted && !pollOverVal) {
                       return Text(
                         waiting,
-                        style: Theme.of(context).textTheme.headline2,
+                        style: Theme.of(context).textTheme.displayMedium,
                         textAlign: TextAlign.center,
                       );
                     } else if (pollOverVal) {
@@ -155,7 +155,7 @@ class _AnswerPageState extends State<AnswerPage> {
                         children: <Widget>[
                           Text(
                             "Poll has ended",
-                            style: Theme.of(context).textTheme.headline2,
+                            style: Theme.of(context).textTheme.displayMedium,
                           ),
                           Container(
                             margin: const EdgeInsets.only(top: 50),
@@ -171,7 +171,7 @@ class _AnswerPageState extends State<AnswerPage> {
                     } else {
                       return Text(
                         'Something went wrong',
-                        style: Theme.of(context).textTheme.headline2,
+                        style: Theme.of(context).textTheme.displayMedium,
                         textAlign: TextAlign.center,
                       );
                     }

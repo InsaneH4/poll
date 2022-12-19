@@ -49,7 +49,7 @@ class _HostPageState extends State<HostPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Text(questions[currQ].question,
-                style: Theme.of(context).textTheme.headline2),
+                style: Theme.of(context).textTheme.displayMedium),
             Visibility(
               visible: !resultsVisible,
               child: Column(
@@ -85,7 +85,7 @@ class _HostPageState extends State<HostPage> {
                 valueListenable: responseNum,
                 builder: ((context, value, child) {
                   return Text("$value total responses",
-                      style: Theme.of(context).textTheme.headline3);
+                      style: Theme.of(context).textTheme.displaySmall);
                 })),
             Visibility(
               visible: !resultsVisible,

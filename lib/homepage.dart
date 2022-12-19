@@ -89,7 +89,7 @@ class _HomepageState extends State<Homepage> {
               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               child: Text(
                 'Welcome to RoboPoll!',
-                style: Theme.of(context).textTheme.headline2,
+                style: Theme.of(context).textTheme.displayMedium,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -141,7 +141,7 @@ class _HomepageState extends State<Homepage> {
                           child: TextField(
                             maxLines: 1,
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headline3,
+                            style: Theme.of(context).textTheme.displaySmall,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
                               enabledBorder: UnderlineInputBorder(
@@ -184,13 +184,13 @@ void _wrongCodeDialog(BuildContext context) {
         backgroundColor: Colors.grey[850],
         title: Text(
           'Error',
-          style: Theme.of(context).textTheme.headline4,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
-        content: Text(errMsg, style: Theme.of(context).textTheme.headline6),
+        content: Text(errMsg, style: Theme.of(context).textTheme.titleLarge),
         actions: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.headline6,
+              textStyle: Theme.of(context).textTheme.titleLarge,
               foregroundColor: gold,
             ),
             onPressed: () => Navigator.pop(context, 'OK'),
