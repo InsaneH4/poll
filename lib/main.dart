@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 String streamStr = "";
 String roomCode = "";
@@ -21,10 +22,16 @@ ValueNotifier<List<int>> responses = ValueNotifier([0, 0, 0, 0]);
 ValueNotifier<String> serverStream = ValueNotifier("");
 var endpoint = Uri.parse("wss://robopoll-server.herokuapp.com");
 var channel = WebSocketChannel.connect(endpoint);
+var isMobileSite = kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS);
 StreamSubscription wsStream =
     channel.stream.listen((message) => listenMethod(message));
 //TODO: Deploy app on iOS and publish on google play/app store
 void main() {
+  if (kIsWeb) {
+    setUrlStrategy(null);
+  }
   wsStream.resume();
   Timer.periodic(const Duration(seconds: 45), (timer) {
     channel.sink.add("ping");

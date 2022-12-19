@@ -93,9 +93,13 @@ class _HostPageState extends State<HostPage> {
                 width: 250,
                 height: 75,
                 child: ElevatedButton(
-                  child: const Text(
+                  child: Text(
                     "Show results",
-                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                    style: isMobileSite
+                        ? const TextStyle(
+                            fontSize: 32, fontWeight: FontWeight.bold)
+                        : const TextStyle(
+                            fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () => resultsVis(true),
                 ),

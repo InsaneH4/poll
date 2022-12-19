@@ -15,14 +15,6 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  void showField() {
-    setState(
-      () {
-        _fieldVisible = !_fieldVisible;
-      },
-    );
-  }
-
   void reconnectWs() {
     flushWsStream();
     setState(() {
@@ -42,8 +34,6 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
-
-  var _fieldVisible = true;
 
   void codeSubmit(var codeFieldCont) async {
     roomCode = codeFieldCont.text.toUpperCase();
@@ -73,9 +63,11 @@ class _HomepageState extends State<Homepage> {
     }
   }
 
+  final codeFieldCont = TextEditingController();
+  var fieldNotEmpty = false;
+
   @override
   Widget build(BuildContext context) {
-    final codeFieldCont = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -89,115 +81,119 @@ class _HomepageState extends State<Homepage> {
               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               child: Text(
                 'Welcome to RoboPoll!',
-                style: Theme.of(context).textTheme.displayMedium,
+                style: isMobileSite
+                    ? Theme.of(context).textTheme.displaySmall
+                    : Theme.of(context).textTheme.displayMedium,
                 textAlign: TextAlign.center,
               ),
             ),
-            Column(children: <Widget>[
-              SizedBox(
-                width: 250,
-                height: 75,
-                child: ElevatedButton(
-                  onPressed: () => hostStart(),
-                  child: const Text(
-                    "Create Poll",
-                    style: TextStyle(fontSize: 36),
+            Column(
+              children: <Widget>[
+                SizedBox(
+                  width: 250,
+                  height: 75,
+                  child: ElevatedButton(
+                    onPressed: () => hostStart(),
+                    child: const Text(
+                      "Create Poll",
+                      style: TextStyle(fontSize: 36),
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 50),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 275),
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                    final offsetAnimation = Tween<Offset>(
-                            begin: const Offset(0.0, 2.0),
-                            end: const Offset(0.0, 0.0))
-                        .animate(animation);
-                    return ClipRect(
-                        child: SlideTransition(
-                      position: offsetAnimation,
-                      child: child,
-                    ));
-                  },
-                  child: _fieldVisible
-                      //container makes animation work lol
-                      // ignore: avoid_unnecessary_containers
-                      ? Container(
-                          child: SizedBox(
-                            width: 250,
-                            height: 75,
-                            child: ElevatedButton(
-                              onPressed: showField,
-                              child: const Text("Join Poll",
-                                  style: TextStyle(fontSize: 36)),
-                            ),
-                          ),
-                        )
-                      : SizedBox(
-                          width: 250,
-                          height: 75,
-                          child: TextField(
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.displaySmall,
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: gold,
-                                ),
-                              ),
-                              hintText: 'Room Code',
-                              hintStyle:
-                                  TextStyle(fontSize: 36, color: Colors.grey),
-                            ),
-                            textCapitalization: TextCapitalization.characters,
-                            autocorrect: false,
-                            enableSuggestions: false,
-                            controller: codeFieldCont,
-                            onEditingComplete: () => codeSubmit(codeFieldCont),
+                Container(
+                  margin: const EdgeInsets.only(top: 50),
+                  child: SizedBox(
+                    width: 250,
+                    height: 75,
+                    child: TextField(
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.displaySmall,
+                      decoration: const InputDecoration(
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.white,
                           ),
                         ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: gold,
+                          ),
+                        ),
+                        hintText: 'Join Poll',
+                        hintStyle: TextStyle(fontSize: 36, color: Colors.grey),
+                      ),
+                      textCapitalization: TextCapitalization.characters,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      controller: codeFieldCont,
+                      onChanged: (text) {
+                        setState(() {
+                          fieldNotEmpty = text.isNotEmpty && text.length == 4;
+                        });
+                      },
+                    ),
+                  ),
                 ),
-              ),
-            ])
+                SizedBox(
+                  height: 50,
+                  child: AnimatedOpacity(
+                    opacity: fieldNotEmpty ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 250),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: gold,
+                        textStyle: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      onPressed: () => codeSubmit(codeFieldCont),
+                      child: const Text("Submit"),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
-}
 
-void _wrongCodeDialog(BuildContext context) {
-  user = false;
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: Colors.grey[850],
-        title: Text(
-          'Error',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-        content: Text(errMsg, style: Theme.of(context).textTheme.titleLarge),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.titleLarge,
-              foregroundColor: gold,
-            ),
-            onPressed: () => Navigator.pop(context, 'OK'),
-            child: const Text('OK'),
+  void _wrongCodeDialog(BuildContext context) {
+    user = false;
+    var disconnected = errMsg == "Not connected to server";
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[850],
+          title: Text(
+            'Error',
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
-        ],
-      );
-    },
-  );
+          content: Text(errMsg, style: Theme.of(context).textTheme.titleLarge),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.titleLarge,
+                foregroundColor: gold,
+              ),
+              onPressed: disconnected
+                  ? () {
+                      flushWsStream();
+                      setState(() {
+                        channel = WebSocketChannel.connect(endpoint);
+                        channel.stream
+                            .listen((message) => listenMethod(message));
+                      });
+                      Navigator.pop(context, 'OK');
+                      //disconnected = false;
+                    }
+                  : () => Navigator.pop(context, 'OK'),
+              child: Text(disconnected ? 'Reconnect' : 'OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

@@ -1,10 +1,10 @@
 import 'package:web_socket_channel/web_socket_channel.dart';
-
 import 'main.dart';
 import 'homepage.dart';
 import 'package:flutter/material.dart';
 
 var isStarted = false;
+double boxHeight = isMobileSite ? 125 : 175;
 
 class AnswerPage extends StatefulWidget {
   final String title = "Joined Poll";
@@ -64,7 +64,7 @@ class _AnswerPageState extends State<AnswerPage> {
                               children: <Widget>[
                                 SizedBox(
                                   width: 175,
-                                  height: 175,
+                                  height: boxHeight,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
@@ -79,7 +79,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                 ),
                                 SizedBox(
                                   width: 175,
-                                  height: 175,
+                                  height: boxHeight,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
@@ -102,7 +102,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                 children: <Widget>[
                                   SizedBox(
                                     width: 175,
-                                    height: 175,
+                                    height: boxHeight,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         foregroundColor: Colors.white,
@@ -117,7 +117,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                   ),
                                   SizedBox(
                                     width: 175,
-                                    height: 175,
+                                    height: boxHeight,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         foregroundColor: Colors.white,
@@ -134,10 +134,15 @@ class _AnswerPageState extends State<AnswerPage> {
                               ),
                             ),
                             Container(
-                              margin: const EdgeInsets.only(top: 75),
+                              margin: isMobileSite
+                                  ? const EdgeInsets.only(top: 40)
+                                  : const EdgeInsets.only(top: 75),
                               child: Text(
-                                  style: const TextStyle(
-                                      fontSize: 48, color: Colors.white),
+                                  style: isMobileSite
+                                      ? const TextStyle(
+                                          fontSize: 36, color: Colors.white)
+                                      : const TextStyle(
+                                          fontSize: 48, color: Colors.white),
                                   textAlign: TextAlign.center,
                                   question),
                             ),
