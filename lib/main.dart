@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-
+import 'package:flutter/services.dart';
 import 'homepage.dart';
 import 'create_page.dart';
 import 'answer_page.dart';
@@ -26,6 +26,9 @@ StreamSubscription wsStream =
 //TODO: Deploy app!
 void main() {
   wsStream.resume();
+  Timer.periodic(const Duration(seconds: 45), (timer) {
+    channel.sink.add("ping");
+  });
   runApp(const MyApp());
 }
 
@@ -41,6 +44,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return MaterialApp(
       title: 'RoboPoll',
       navigatorKey: GlobalContextService.navigatorKey,
@@ -94,9 +98,9 @@ void flushWsStream() {
 void listenMethod(message) {
   streamStr = message;
   serverStream.value = streamStr;
-  //if (kDebugMode) {
-  print(streamStr);
-  //}
+  if (kDebugMode) {
+    print(streamStr);
+  }
   if (streamStr.contains('userAnswered')) {
     var regex = RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1);
     responseNum.value = int.parse(regex!);
@@ -133,7 +137,24 @@ void listenMethod(message) {
         RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1) as String);
   } else if (streamStr.contains('goodbye') && user) {
     pollOver.value = true;
-    //leavePollUsr(GlobalContextService.navigatorKey.currentContext);
   }
   flushWsStream();
+}
+
+void tempDialog(BuildContext context) {
+  showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('You did something!'),
+        content: const Text('This feature is in development :)'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
 }

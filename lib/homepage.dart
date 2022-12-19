@@ -46,14 +46,9 @@ class _HomepageState extends State<Homepage> {
   var _fieldVisible = true;
 
   void codeSubmit(var codeFieldCont) async {
-    flushWsStream();
     roomCode = codeFieldCont.text.toUpperCase();
-    setState(() {
-      channel = WebSocketChannel.connect(endpoint);
-      channel.stream.listen((message) => listenMethod(message));
-    });
-    channel.sink.add('userInit?code=$roomCode');
     if (roomCode.isNotEmpty && roomCode.length == 4) {
+      channel.sink.add('userInit?code=$roomCode');
       const loadBar = SnackBar(
         content: Text("Connecting..."),
         duration: Duration(seconds: 2),
@@ -206,21 +201,3 @@ void _wrongCodeDialog(BuildContext context) {
     },
   );
 }
-
-/*void tempDialog(BuildContext context) {
-  showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('You did something!'),
-        content: const Text('This feature is in development :)'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'OK'),
-            child: const Text('OK'),
-          ),
-        ],
-      );
-    },
-  );
-}*/

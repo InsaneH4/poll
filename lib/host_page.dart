@@ -13,8 +13,6 @@ class HostPage extends StatefulWidget {
 }
 
 class _HostPageState extends State<HostPage> {
-  //resultsVisible is what determines what widgets are shown
-  //and it changes when the host presses showResults
   var resultsVisible = false;
   var goToHome = MaterialPageRoute(builder: (context) => const Homepage());
 
