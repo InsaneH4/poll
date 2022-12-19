@@ -1,6 +1,6 @@
 {
-    "name": "robopoll",
-    "short_name": "robopoll",
+    "name": "RoboPoll",
+    "short_name": "RoboPoll",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
