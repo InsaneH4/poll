@@ -144,14 +144,17 @@ class _HomepageState extends State<Homepage> {
                     child: AnimatedOpacity(
                       opacity: fieldNotEmpty ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 250),
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          foregroundColor: gold,
-                          textStyle: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                        onPressed: () => codeSubmit(codeFieldCont),
-                        child: const Text("Submit"),
-                      ),
+                      child: fieldNotEmpty
+                          ? TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: gold,
+                                textStyle:
+                                    Theme.of(context).textTheme.headlineMedium,
+                              ),
+                              onPressed: () => codeSubmit(codeFieldCont),
+                              child: const Text("Submit"),
+                            )
+                          : null,
                     ),
                   ),
                 ],

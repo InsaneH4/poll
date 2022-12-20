@@ -4,7 +4,6 @@ import 'homepage.dart';
 import 'package:flutter/material.dart';
 
 var isStarted = false;
-double boxHeight = isMobile ? 125 : 175;
 
 class AnswerPage extends StatefulWidget {
   final String title = "Joined Poll";
@@ -20,6 +19,8 @@ class _AnswerPageState extends State<AnswerPage> {
 
   @override
   Widget build(BuildContext context) {
+    double boxHeight = isMobile ? 125 : 200;
+    double boxWidth = isMobile ? 175 : 350;
     var options = List<String>.filled(4, "loading...");
     return WillPopScope(
       onWillPop: () async => false,
@@ -66,7 +67,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
                                   SizedBox(
-                                    width: 175,
+                                    width: boxWidth,
                                     height: boxHeight,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
@@ -81,7 +82,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                     ),
                                   ),
                                   SizedBox(
-                                    width: 175,
+                                    width: boxWidth,
                                     height: boxHeight,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
@@ -104,7 +105,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     SizedBox(
-                                      width: 175,
+                                      width: boxWidth,
                                       height: boxHeight,
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
@@ -119,7 +120,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                       ),
                                     ),
                                     SizedBox(
-                                      width: 175,
+                                      width: boxWidth,
                                       height: boxHeight,
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
@@ -137,8 +138,9 @@ class _AnswerPageState extends State<AnswerPage> {
                                 ),
                               ),
                               SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.3,
+                                height: isMobile
+                                    ? MediaQuery.of(context).size.height * 0.3
+                                    : MediaQuery.of(context).size.height * 0.2,
                                 width: MediaQuery.of(context).size.width * 0.8,
                                 child: Container(
                                   margin: isMobile
