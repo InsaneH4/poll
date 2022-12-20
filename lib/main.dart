@@ -22,9 +22,8 @@ ValueNotifier<List<int>> responses = ValueNotifier([0, 0, 0, 0]);
 ValueNotifier<String> serverStream = ValueNotifier("");
 var endpoint = Uri.parse("wss://robopoll-server.herokuapp.com");
 var channel = WebSocketChannel.connect(endpoint);
-var isMobile = kIsWeb &&
-    (defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS);
+var isMobile = defaultTargetPlatform == TargetPlatform.android ||
+    defaultTargetPlatform == TargetPlatform.iOS;
 StreamSubscription wsStream =
     channel.stream.listen((message) => listenMethod(message));
 //TODO: Publish on google play/app store

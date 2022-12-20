@@ -68,92 +68,96 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Container(
-              margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Text(
-                'Welcome to RoboPoll!',
-                style: isMobile
-                    ? Theme.of(context).textTheme.displaySmall
-                    : Theme.of(context).textTheme.displayMedium,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Column(
-              children: <Widget>[
-                SizedBox(
-                  width: 250,
-                  height: 75,
-                  child: ElevatedButton(
-                    onPressed: () => hostStart(),
-                    child: const Text(
-                      "Create Poll",
-                      style: TextStyle(fontSize: 36),
-                    ),
-                  ),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text(widget.title),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Container(
+                margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                child: Text(
+                  'Welcome to RoboPoll!',
+                  style: isMobile
+                      ? Theme.of(context).textTheme.displaySmall
+                      : Theme.of(context).textTheme.displayMedium,
+                  textAlign: TextAlign.center,
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 50),
-                  child: SizedBox(
+              ),
+              Column(
+                children: <Widget>[
+                  SizedBox(
                     width: 250,
                     height: 75,
-                    child: TextField(
-                      keyboardAppearance: Brightness.dark,
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.displaySmall,
-                      decoration: const InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.white,
-                          ),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: gold,
-                          ),
-                        ),
-                        hintText: 'Join Poll',
-                        hintStyle: TextStyle(fontSize: 36, color: Colors.grey),
+                    child: ElevatedButton(
+                      onPressed: () => hostStart(),
+                      child: const Text(
+                        "Create Poll",
+                        style: TextStyle(fontSize: 36),
                       ),
-                      textCapitalization: TextCapitalization.characters,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      controller: codeFieldCont,
-                      onChanged: (text) {
-                        setState(() {
-                          fieldNotEmpty = text.isNotEmpty && text.length == 4;
-                        });
-                      },
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 50,
-                  child: AnimatedOpacity(
-                    opacity: fieldNotEmpty ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 250),
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: gold,
-                        textStyle: Theme.of(context).textTheme.headlineMedium,
+                  Container(
+                    margin: const EdgeInsets.only(top: 50),
+                    child: SizedBox(
+                      width: 250,
+                      height: 75,
+                      child: TextField(
+                        keyboardAppearance: Brightness.dark,
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.displaySmall,
+                        decoration: const InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.white,
+                            ),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: gold,
+                            ),
+                          ),
+                          hintText: 'Join Poll',
+                          hintStyle:
+                              TextStyle(fontSize: 36, color: Colors.grey),
+                        ),
+                        textCapitalization: TextCapitalization.characters,
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        controller: codeFieldCont,
+                        onChanged: (text) {
+                          setState(() {
+                            fieldNotEmpty = text.isNotEmpty && text.length == 4;
+                          });
+                        },
                       ),
-                      onPressed: () => codeSubmit(codeFieldCont),
-                      child: const Text("Submit"),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(
+                    height: 50,
+                    child: AnimatedOpacity(
+                      opacity: fieldNotEmpty ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 250),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: gold,
+                          textStyle: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        onPressed: () => codeSubmit(codeFieldCont),
+                        child: const Text("Submit"),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

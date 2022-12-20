@@ -65,7 +65,7 @@ class DynamicWidget extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
-                    keyboardAppearance: Brightness.dark,
+                      keyboardAppearance: Brightness.dark,
                       controller: choice1,
                       style: Theme.of(context).textTheme.titleLarge,
                       decoration: InputDecoration(
@@ -283,25 +283,28 @@ class _CreatePageState extends State<CreatePage> {
       Navigator.push(context, goToHome);
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: returnToHome,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: returnToHome,
+          ),
         ),
+        body: Column(children: <Widget>[
+          pollObject.question.isEmpty ? dynamicTextField : startGame,
+          pollObject.question.isEmpty ? submitButton : Container(),
+        ]),
+        floatingActionButton: showButton
+            ? FloatingActionButton(
+                foregroundColor: Colors.black,
+                onPressed: _addDynamic,
+                child: const Icon(Icons.add),
+              )
+            : null,
       ),
-      body: Column(children: <Widget>[
-        pollObject.question.isEmpty ? dynamicTextField : startGame,
-        pollObject.question.isEmpty ? submitButton : Container(),
-      ]),
-      floatingActionButton: showButton
-          ? FloatingActionButton(
-              foregroundColor: Colors.black,
-              onPressed: _addDynamic,
-              child: const Icon(Icons.add),
-            )
-          : null,
     );
   }
 
