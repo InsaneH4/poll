@@ -141,7 +141,7 @@ void listenMethod(message) {
   } else if (streamStr.contains('userAnswered')) {
     responseNum.value = int.parse(
         RegExp(r'total=(.*)').firstMatch(streamStr)!.group(1) as String);
-  } else if (streamStr.contains('goodbye') && user) {
+  } else if (streamStr == ('goodbye') && user) {
     pollOver.value = true;
   }
   flushWsStream();
