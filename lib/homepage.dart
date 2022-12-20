@@ -81,7 +81,7 @@ class _HomepageState extends State<Homepage> {
               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               child: Text(
                 'Welcome to RoboPoll!',
-                style: isMobileSite
+                style: isMobile
                     ? Theme.of(context).textTheme.displaySmall
                     : Theme.of(context).textTheme.displayMedium,
                 textAlign: TextAlign.center,
@@ -106,6 +106,7 @@ class _HomepageState extends State<Homepage> {
                     width: 250,
                     height: 75,
                     child: TextField(
+                      keyboardAppearance: Brightness.dark,
                       maxLines: 1,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.displaySmall,

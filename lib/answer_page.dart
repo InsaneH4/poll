@@ -4,7 +4,7 @@ import 'homepage.dart';
 import 'package:flutter/material.dart';
 
 var isStarted = false;
-double boxHeight = isMobileSite ? 125 : 175;
+double boxHeight = isMobile ? 125 : 175;
 
 class AnswerPage extends StatefulWidget {
   final String title = "Joined Poll";
@@ -134,11 +134,11 @@ class _AnswerPageState extends State<AnswerPage> {
                               ),
                             ),
                             Container(
-                              margin: isMobileSite
+                              margin: isMobile
                                   ? const EdgeInsets.only(top: 40)
                                   : const EdgeInsets.only(top: 75),
                               child: Text(
-                                  style: isMobileSite
+                                  style: isMobile
                                       ? const TextStyle(
                                           fontSize: 36, color: Colors.white)
                                       : const TextStyle(
@@ -152,7 +152,9 @@ class _AnswerPageState extends State<AnswerPage> {
                     } else if (!isStarted && !pollOverVal) {
                       return Text(
                         waiting,
-                        style: Theme.of(context).textTheme.displayMedium,
+                        style: isMobile
+                            ? const TextStyle(fontSize: 42, color: white)
+                            : Theme.of(context).textTheme.displayMedium,
                         textAlign: TextAlign.center,
                       );
                     } else if (pollOverVal) {

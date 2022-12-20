@@ -95,7 +95,7 @@ class _HostPageState extends State<HostPage> {
                 child: ElevatedButton(
                   child: Text(
                     "Show results",
-                    style: isMobileSite
+                    style: isMobile
                         ? const TextStyle(
                             fontSize: 32, fontWeight: FontWeight.bold)
                         : const TextStyle(

@@ -22,12 +22,12 @@ ValueNotifier<List<int>> responses = ValueNotifier([0, 0, 0, 0]);
 ValueNotifier<String> serverStream = ValueNotifier("");
 var endpoint = Uri.parse("wss://robopoll-server.herokuapp.com");
 var channel = WebSocketChannel.connect(endpoint);
-var isMobileSite = kIsWeb &&
+var isMobile = kIsWeb &&
     (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
 StreamSubscription wsStream =
     channel.stream.listen((message) => listenMethod(message));
-//TODO: Deploy app on iOS and publish on google play/app store
+//TODO: Publish on google play/app store
 void main() {
   if (kIsWeb) {
     setUrlStrategy(null);

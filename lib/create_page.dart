@@ -46,6 +46,7 @@ class DynamicWidget extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   child: TextField(
+                    keyboardAppearance: Brightness.dark,
                     controller: question,
                     style: Theme.of(context).textTheme.titleLarge,
                     decoration: InputDecoration(
@@ -64,6 +65,7 @@ class DynamicWidget extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
+                    keyboardAppearance: Brightness.dark,
                       controller: choice1,
                       style: Theme.of(context).textTheme.titleLarge,
                       decoration: InputDecoration(
@@ -77,6 +79,7 @@ class DynamicWidget extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
+                    keyboardAppearance: Brightness.dark,
                     controller: choice2,
                     style: Theme.of(context).textTheme.titleLarge,
                     decoration: InputDecoration(
@@ -94,6 +97,7 @@ class DynamicWidget extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
+                  keyboardAppearance: Brightness.dark,
                   controller: choice3,
                   style: Theme.of(context).textTheme.titleLarge,
                   decoration: InputDecoration(
@@ -108,6 +112,7 @@ class DynamicWidget extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
+                  keyboardAppearance: Brightness.dark,
                   controller: choice4,
                   style: Theme.of(context).textTheme.titleLarge,
                   decoration: InputDecoration(
@@ -136,7 +141,8 @@ class _CreatePageState extends State<CreatePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.grey[850],
-          title: Text('Umm...', style: Theme.of(context).textTheme.headlineMedium),
+          title:
+              Text('Umm...', style: Theme.of(context).textTheme.headlineMedium),
           content: Text(
             type == 0
                 ? "You didn't add any questions"
