@@ -20763,7 +20763,7 @@ else if(B.c.A(s,"gameStart")){if($.Cp&&!$.Sp)$.akb=!0
 $.f1=""
 $.fu=0}else if(B.c.A(s,"answerStatus")){s=$.kl()
 q=A.hs("results=(.*)",!0).kt($.f1).b[1]
-s.sm(0,J.SE(t.j.a(B.by.L2(0,q==null?A.bz(q):q,null)),new A.ah3(),t.S).ew(0))}else if(B.c.A(s,"goodbye")&&$.Cp)$.ahO().sm(0,!0)
+s.sm(0,J.SE(t.j.a(B.by.L2(0,q==null?A.bz(q):q,null)),new A.ah3(),t.S).ew(0))}else if(s==="goodbye"&&$.Cp)$.ahO().sm(0,!0)
 $.f1=""},
 ahx:function ahx(){},
 ah8:function ah8(){},
