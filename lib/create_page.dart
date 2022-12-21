@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'main.dart';
@@ -47,6 +48,9 @@ class DynamicWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   child: TextField(
                     keyboardAppearance: Brightness.dark,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(50),
+                    ],
                     controller: question,
                     style: Theme.of(context).textTheme.titleLarge,
                     decoration: InputDecoration(
@@ -66,6 +70,9 @@ class DynamicWidget extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
                       keyboardAppearance: Brightness.dark,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(25),
+                      ],
                       controller: choice1,
                       style: Theme.of(context).textTheme.titleLarge,
                       decoration: InputDecoration(
@@ -80,6 +87,9 @@ class DynamicWidget extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
                     keyboardAppearance: Brightness.dark,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(25),
+                    ],
                     controller: choice2,
                     style: Theme.of(context).textTheme.titleLarge,
                     decoration: InputDecoration(
@@ -98,6 +108,9 @@ class DynamicWidget extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
                   keyboardAppearance: Brightness.dark,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(25),
+                  ],
                   controller: choice3,
                   style: Theme.of(context).textTheme.titleLarge,
                   decoration: InputDecoration(
@@ -113,6 +126,9 @@ class DynamicWidget extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
                   keyboardAppearance: Brightness.dark,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(25),
+                  ],
                   controller: choice4,
                   style: Theme.of(context).textTheme.titleLarge,
                   decoration: InputDecoration(

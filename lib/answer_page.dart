@@ -138,9 +138,8 @@ class _AnswerPageState extends State<AnswerPage> {
                                 ),
                               ),
                               SizedBox(
-                                height: isMobile
-                                    ? MediaQuery.of(context).size.height * 0.3
-                                    : MediaQuery.of(context).size.height * 0.2,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.25,
                                 width: MediaQuery.of(context).size.width * 0.8,
                                 child: Container(
                                   margin: isMobile
@@ -149,7 +148,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                   child: Text(
                                       style: isMobile
                                           ? const TextStyle(
-                                              fontSize: 36, color: Colors.white)
+                                              fontSize: 30, color: Colors.white)
                                           : const TextStyle(
                                               fontSize: 48,
                                               color: Colors.white),

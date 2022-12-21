@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'main.dart';
@@ -130,6 +131,9 @@ class _HomepageState extends State<Homepage> {
                         textCapitalization: TextCapitalization.characters,
                         autocorrect: false,
                         enableSuggestions: false,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(50),
+                        ],
                         controller: codeFieldCont,
                         onChanged: (text) {
                           setState(() {

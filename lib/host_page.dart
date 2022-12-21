@@ -50,8 +50,12 @@ class _HostPageState extends State<HostPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Text(questions[currQ].question,
-                  style: Theme.of(context).textTheme.displayMedium),
+              Container(
+                margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Text(questions[currQ].question,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.displayMedium),
+              ),
               Visibility(
                 visible: !resultsVisible,
                 child: Column(
