@@ -132,7 +132,7 @@ class _HomepageState extends State<Homepage> {
                         autocorrect: false,
                         enableSuggestions: false,
                         inputFormatters: [
-                          LengthLimitingTextInputFormatter(50),
+                          LengthLimitingTextInputFormatter(4),
                         ],
                         controller: codeFieldCont,
                         onChanged: (text) {

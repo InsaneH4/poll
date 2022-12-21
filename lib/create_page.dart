@@ -49,7 +49,7 @@ class DynamicWidget extends StatelessWidget {
                   child: TextField(
                     keyboardAppearance: Brightness.dark,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(50),
+                      LengthLimitingTextInputFormatter(75),
                     ],
                     controller: question,
                     style: Theme.of(context).textTheme.titleLarge,
@@ -71,7 +71,7 @@ class DynamicWidget extends StatelessWidget {
                   child: TextField(
                       keyboardAppearance: Brightness.dark,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(25),
+                        LengthLimitingTextInputFormatter(22),
                       ],
                       controller: choice1,
                       style: Theme.of(context).textTheme.titleLarge,
@@ -88,7 +88,7 @@ class DynamicWidget extends StatelessWidget {
                   child: TextField(
                     keyboardAppearance: Brightness.dark,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(25),
+                      LengthLimitingTextInputFormatter(22),
                     ],
                     controller: choice2,
                     style: Theme.of(context).textTheme.titleLarge,
@@ -109,7 +109,7 @@ class DynamicWidget extends StatelessWidget {
                 child: TextField(
                   keyboardAppearance: Brightness.dark,
                   inputFormatters: [
-                    LengthLimitingTextInputFormatter(25),
+                    LengthLimitingTextInputFormatter(22),
                   ],
                   controller: choice3,
                   style: Theme.of(context).textTheme.titleLarge,
@@ -127,7 +127,7 @@ class DynamicWidget extends StatelessWidget {
                 child: TextField(
                   keyboardAppearance: Brightness.dark,
                   inputFormatters: [
-                    LengthLimitingTextInputFormatter(25),
+                    LengthLimitingTextInputFormatter(22),
                   ],
                   controller: choice4,
                   style: Theme.of(context).textTheme.titleLarge,

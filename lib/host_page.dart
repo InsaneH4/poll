@@ -46,137 +46,149 @@ class _HostPageState extends State<HostPage> {
             },
           ),
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Container(
-                margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                child: Text(questions[currQ].question,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.displayMedium),
-              ),
-              Visibility(
-                visible: !resultsVisible,
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      child: Text(questions[currQ].options[0],
-                          style:
-                              const TextStyle(fontSize: 36, color: Colors.red)),
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height,
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    child: SingleChildScrollView(
+                      child: Text(questions[currQ].question,
+                          textAlign: TextAlign.center,
+                          style: isMobile
+                              ? const TextStyle(
+                                  fontSize: 30, color: Colors.white)
+                              : Theme.of(context).textTheme.displayMedium),
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      child: Text(questions[currQ].options[1],
-                          style: const TextStyle(
-                              fontSize: 36, color: Colors.blue)),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      child: Text(questions[currQ].options[2],
-                          style: const TextStyle(
-                              fontSize: 36, color: Colors.amber)),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      child: Text(questions[currQ].options[3],
-                          style: const TextStyle(
-                              fontSize: 36, color: Colors.green)),
-                    ),
-                  ],
-                ),
-              ),
-              ValueListenableBuilder(
-                  valueListenable: responseNum,
-                  builder: ((context, value, child) {
-                    return Text("$value total responses",
-                        style: Theme.of(context).textTheme.displaySmall);
-                  })),
-              Visibility(
-                visible: !resultsVisible,
-                child: SizedBox(
-                  width: 250,
-                  height: 75,
-                  child: ElevatedButton(
-                    child: Text(
-                      "Show results",
-                      style: isMobile
-                          ? const TextStyle(
-                              fontSize: 32, fontWeight: FontWeight.bold)
-                          : const TextStyle(
-                              fontSize: 36, fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: () => resultsVis(true),
                   ),
-                ),
-              ),
-              Visibility(
-                visible: resultsVisible,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    ValueListenableBuilder(
-                      valueListenable: responses,
-                      builder: ((context, value, child) {
-                        return Column(
-                          children: <Widget>[
-                            Container(
-                                margin: const EdgeInsets.only(top: 10),
-                                child: Text(
-                                  "${questions[currQ].options[0]}: ${responses.value[0]} responses",
-                                  style: const TextStyle(
-                                      fontSize: 36, color: Colors.red),
-                                )),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                "${questions[currQ].options[1]}: ${responses.value[1]} responses",
-                                style: const TextStyle(
-                                    fontSize: 36, color: Colors.blue),
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                "${questions[currQ].options[2]}: ${responses.value[2]} responses",
-                                style: const TextStyle(
-                                    fontSize: 36, color: Colors.amber),
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                "${questions[currQ].options[3]}: ${responses.value[3]} responses",
-                                style: const TextStyle(
-                                    fontSize: 36, color: Colors.green),
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
+                  Visibility(
+                    visible: !resultsVisible,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: Text(questions[currQ].options[0],
+                              style: const TextStyle(
+                                  fontSize: 36, color: Colors.red)),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: Text(questions[currQ].options[1],
+                              style: const TextStyle(
+                                  fontSize: 36, color: Colors.blue)),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: Text(questions[currQ].options[2],
+                              style: const TextStyle(
+                                  fontSize: 36, color: Colors.amber)),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: Text(questions[currQ].options[3],
+                              style: const TextStyle(
+                                  fontSize: 36, color: Colors.green)),
+                        ),
+                      ],
                     ),
-                    Container(
-                      margin: const EdgeInsets.all(50),
+                  ),
+                  ValueListenableBuilder(
+                      valueListenable: responseNum,
+                      builder: ((context, value, child) {
+                        return Text("$value total responses",
+                            style: Theme.of(context).textTheme.displaySmall);
+                      })),
+                  Visibility(
+                    visible: !resultsVisible,
+                    child: SizedBox(
+                      width: 250,
+                      height: 75,
                       child: ElevatedButton(
-                        child: Text(currQ + 1 == questions.length
-                            ? "End Poll"
-                            : "Next"),
-                        onPressed: () {
-                          if (currQ + 1 == questions.length) {
-                            hostEndPoll();
-                          } else {
-                            resultsVis(false);
-                            responseNum.value = 0;
-                            responses.value = [0, 0, 0, 0];
-                          }
-                        },
+                        child: Text(
+                          "Show results",
+                          style: isMobile
+                              ? const TextStyle(
+                                  fontSize: 32, fontWeight: FontWeight.bold)
+                              : const TextStyle(
+                                  fontSize: 36, fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () => resultsVis(true),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Visibility(
+                    visible: resultsVisible,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        ValueListenableBuilder(
+                          valueListenable: responses,
+                          builder: ((context, value, child) {
+                            return Column(
+                              children: <Widget>[
+                                Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    child: Text(
+                                      "${questions[currQ].options[0]}: ${responses.value[0]} responses",
+                                      style: const TextStyle(
+                                          fontSize: 36, color: Colors.red),
+                                    )),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    "${questions[currQ].options[1]}: ${responses.value[1]} responses",
+                                    style: const TextStyle(
+                                        fontSize: 36, color: Colors.blue),
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    "${questions[currQ].options[2]}: ${responses.value[2]} responses",
+                                    style: const TextStyle(
+                                        fontSize: 36, color: Colors.amber),
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    "${questions[currQ].options[3]}: ${responses.value[3]} responses",
+                                    style: const TextStyle(
+                                        fontSize: 36, color: Colors.green),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(50),
+                          child: ElevatedButton(
+                            child: Text(currQ + 1 == questions.length
+                                ? "End Poll"
+                                : "Next"),
+                            onPressed: () {
+                              if (currQ + 1 == questions.length) {
+                                hostEndPoll();
+                              } else {
+                                resultsVis(false);
+                                responseNum.value = 0;
+                                responses.value = [0, 0, 0, 0];
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -71,6 +71,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                     height: boxHeight,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
+                                        alignment: Alignment.center,
                                         foregroundColor: Colors.white,
                                         backgroundColor: Colors.red,
                                         textStyle: const TextStyle(
@@ -86,6 +87,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                     height: boxHeight,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
+                                        alignment: Alignment.center,
                                         foregroundColor: Colors.white,
                                         backgroundColor: Colors.blue,
                                         textStyle: const TextStyle(
@@ -109,6 +111,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                       height: boxHeight,
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
+                                          alignment: Alignment.center,
                                           foregroundColor: Colors.white,
                                           backgroundColor: Colors.amber,
                                           textStyle: const TextStyle(
@@ -124,6 +127,7 @@ class _AnswerPageState extends State<AnswerPage> {
                                       height: boxHeight,
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
+                                          alignment: Alignment.center,
                                           foregroundColor: Colors.white,
                                           backgroundColor: Colors.green,
                                           textStyle: const TextStyle(
@@ -140,20 +144,23 @@ class _AnswerPageState extends State<AnswerPage> {
                               SizedBox(
                                 height:
                                     MediaQuery.of(context).size.height * 0.25,
-                                width: MediaQuery.of(context).size.width * 0.8,
+                                width: MediaQuery.of(context).size.width * 0.9,
                                 child: Container(
                                   margin: isMobile
                                       ? const EdgeInsets.only(top: 40)
                                       : const EdgeInsets.only(top: 75),
-                                  child: Text(
-                                      style: isMobile
-                                          ? const TextStyle(
-                                              fontSize: 30, color: Colors.white)
-                                          : const TextStyle(
-                                              fontSize: 48,
-                                              color: Colors.white),
-                                      textAlign: TextAlign.center,
-                                      question),
+                                  child: SingleChildScrollView(
+                                    child: Text(
+                                        style: isMobile
+                                            ? const TextStyle(
+                                                fontSize: 30,
+                                                color: Colors.white)
+                                            : Theme.of(context)
+                                                .textTheme
+                                                .displayMedium,
+                                        textAlign: TextAlign.center,
+                                        question),
+                                  ),
                                 ),
                               ),
                             ],
